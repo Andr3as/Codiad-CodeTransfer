@@ -1,0 +1,213 @@
+/*
+ * Copyright (c) Codiad & Andr3as, distributed
+ * as-is and without warranty under the MIT License. 
+ * See [root]/license.md for more information. This information must remain intact.
+ */
+/* ICONS */
+
+.fileList li {
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    text-indent: 22px;
+    padding-top: 5px;
+}
+.fileList .directory {
+    background-image: url(../../themes/default/filemanager/images/directory.png);
+}
+.fileList .directory.open {
+    background-image: url(../../themes/default/filemanager/images/directory_open.png);
+}
+.fileList .file {
+    background-image: url(../../themes/default/filemanager/images/file.png);
+}
+
+/* EXTENSIONS */
+.fileList .ext-htaccess {
+    background-image: url(../../themes/default/filemanager/images/config.png);
+}
+.fileList .ext-conf {
+    background-image: url(../../themes/default/filemanager/images/config.png);
+}
+.fileList .ext-ini {
+    background-image: url(../../themes/default/filemanager/images/config.png);
+}
+.fileList .ext-3gp {
+    background-image: url(../../themes/default/filemanager/images/film.png);
+}
+.fileList .ext-afp {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-afpa {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-asp {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-aspx {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-avi {
+    background-image: url(../../themes/default/filemanager/images/film.png);
+}
+.fileList .ext-bat {
+    background-image: url(../../themes/default/filemanager/images/application.png);
+}
+.fileList .ext-bmp {
+    background-image: url(../../themes/default/filemanager/images/picture.png);
+}
+.fileList .ext-c {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-cfm {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-cgi {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-com {
+    background-image: url(../../themes/default/filemanager/images/application.png);
+}
+.fileList .ext-cpp {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-css {
+    background-image: url(../../themes/default/filemanager/images/css.png);
+}
+.fileList .ext-doc {
+    background-image: url(../../themes/default/filemanager/images/doc.png);
+}
+.fileList .ext-exe {
+    background-image: url(../../themes/default/filemanager/images/application.png);
+}
+.fileList .ext-gif {
+    background-image: url(../../themes/default/filemanager/images/picture.png);
+}
+.fileList .ext-fla {
+    background-image: url(../../themes/default/filemanager/images/flash.png);
+}
+.fileList .ext-h {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-htm {
+    background-image: url(../../themes/default/filemanager/images/html.png);
+}
+.fileList .ext-html {
+    background-image: url(../../themes/default/filemanager/images/html.png);
+}
+.fileList .ext-jar {
+    background-image: url(../../themes/default/filemanager/images/java.png);
+}
+.fileList .ext-jpg {
+    background-image: url(../../themes/default/filemanager/images/picture.png);
+}
+.fileList .ext-jpeg {
+    background-image: url(../../themes/default/filemanager/images/picture.png);
+}
+.fileList .ext-js {
+    background-image: url(../../themes/default/filemanager/images/script.png);
+}
+.fileList .ext-json {
+    background-image: url(../../themes/default/filemanager/images/script.png);
+}
+.fileList .ext-lasso {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-log {
+    background-image: url(../../themes/default/filemanager/images/text-plain.png);
+}
+.fileList .ext-m4p {
+    background-image: url(../../themes/default/filemanager/images/music.png);
+}
+.fileList .ext-mov {
+    background-image: url(../../themes/default/filemanager/images/film.png);
+}
+.fileList .ext-mp3 {
+    background-image: url(../../themes/default/filemanager/images/music.png);
+}
+.fileList .ext-mp4 {
+    background-image: url(../../themes/default/filemanager/images/film.png);
+}
+.fileList .ext-mpg {
+    background-image: url(../../themes/default/filemanager/images/film.png);
+}
+.fileList .ext-mpeg {
+    background-image: url(../../themes/default/filemanager/images/film.png);
+}
+.fileList .ext-ogg {
+    background-image: url(../../themes/default/filemanager/images/music.png);
+}
+.fileList .ext-pcx {
+    background-image: url(../../themes/default/filemanager/images/picture.png);
+}
+.fileList .ext-pdf {
+    background-image: url(../../themes/default/filemanager/images/pdf.png);
+}
+.fileList .ext-php {
+    background-image: url(../../themes/default/filemanager/images/php.png);
+}
+.fileList .ext-png {
+    background-image: url(../../themes/default/filemanager/images/picture.png);
+}
+.fileList .ext-ppt {
+    background-image: url(../../themes/default/filemanager/images/ppt.png);
+}
+.fileList .ext-psd {
+    background-image: url(../../themes/default/filemanager/images/psd.png);
+}
+.fileList .ext-pl {
+    background-image: url(../../themes/default/filemanager/images/script.png);
+}
+.fileList .ext-py {
+    background-image: url(../../themes/default/filemanager/images/script.png);
+}
+.fileList .ext-rb {
+    background-image: url(../../themes/default/filemanager/images/ruby.png);
+}
+.fileList .ext-rbx {
+    background-image: url(../../themes/default/filemanager/images/ruby.png);
+}
+.fileList .ext-rhtml {
+    background-image: url(../../themes/default/filemanager/images/ruby.png);
+}
+.fileList .ext-rpm {
+    background-image: url(../../themes/default/filemanager/images/linux.png);
+}
+.fileList .ext-ruby {
+    background-image: url(../../themes/default/filemanager/images/ruby.png);
+}
+.fileList .ext-sql {
+    background-image: url(../../themes/default/filemanager/images/db.png);
+}
+.fileList .ext-swf {
+    background-image: url(../../themes/default/filemanager/images/flash.png);
+}
+.fileList .ext-tif {
+    background-image: url(../../themes/default/filemanager/images/picture.png);
+}
+.fileList .ext-tiff {
+    background-image: url(../../themes/default/filemanager/images/picture.png);
+}
+.fileList .ext-txt {
+    background-image: url(../../themes/default/filemanager/images/file.png);
+}
+.fileList .ext-vb {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-wav {
+    background-image: url(../../themes/default/filemanager/images/music.png);
+}
+.fileList .ext-wmv {
+    background-image: url(../../themes/default/filemanager/images/film.png);
+}
+.fileList .ext-xls {
+    background-image: url(../../themes/default/filemanager/images/xls.png);
+}
+.fileList .ext-xml {
+    background-image: url(../../themes/default/filemanager/images/code.png);
+}
+.fileList .ext-zip {
+    background-image: url(../../themes/default/filemanager/images/zip.png);
+}
+.fileList .loading {
+    background-image: url(../../themes/default/filemanager/images/spinner.gif);
+}

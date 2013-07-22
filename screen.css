@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) Codiad & Andr3as, distributed
+ * as-is and without warranty under the MIT License. 
+ * See [root]/license.md for more information. This information must remain intact.
+ */
+ 
+@import url(icons.css);
+@import url(loading.css);
+ 
+#ftp_form_div {
+    max-height: 70%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+#ftp_form td {
+    vertical-align: middle;
+}
+
+#ftp_port_td {
+    width: 80px;
+}
+
+#ftp_connect_td {
+    text-align: center;
+    padding: 0;
+}
+
+#ftp_list td {
+    vertical-align: top;
+}
+
+#ftp_form li:hover {
+    background-color: rgb(81,81,81);
+}
+
+#ftp_form li {
+    cursor: pointer;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#ftp_form i {
+    display: inline;
+    vertical-align: bottom;
+    cursor: pointer;
+}
+
+.fileList {
+    width: 50%;
+}
+
+.selected {
+    background-color: rgb(81,81,81);
+}
+
+#ftp_log_div {
+    max-height: 76px;
+    overflow-y: scroll;
+}
+
+.loading {
+    height: 10px;
+}
