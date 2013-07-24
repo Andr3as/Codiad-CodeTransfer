@@ -5,15 +5,13 @@
 -->
 <div id="ftp_form_div">
     <form id="ftp_form">
-        <label>FTP-Client</label>
-        <hr>
         <table>
             <tr>
                 <td>Host:<input type="text" id="ftp_host"></td>
                 <td>User:<input type="text" id="ftp_user"></td>
                 <td>Password:<input type="password" id="ftp_password"></td>
                 <td id="ftp_port_td">Port:<input type="number" value="21" id="ftp_port"></td>
-                <td id="ftp_connect_td"><button id="ftp_connect" onclick="codiad.FTP_Client.connect(); return false;">Connect</button></td>
+                <td id="ftp_connect_td"><button id="ftp_connect" onclick="codiad.CodeFTP.connect(); return false;">Connect</button></td>
                 <td>Transfer Type<select id="ftp_mode">
                         <option value="FTP_ASCII">ASCII</option>
                         <option value="FTP_BINARY">Binary</option>
@@ -25,17 +23,17 @@
         <table id="ftp_list">
             <tr>
                 <td>
-                    <i class="icon-folder" onclick='codiad.FTP_Client.createFolder("localSel");'></i>
-                    <i class="icon-trash" onclick='codiad.FTP_Client.deleteSel("localSel");'></i>
-                    <i class="icon-arrows-ccw" onclick="codiad.FTP_Client.updateLocalFiles(codiad.FTP_Client.cDir);"></i>
+                    <i class="icon-folder" onclick='codiad.CodeFTP.createFolder("localSel");'></i>
+                    <i class="icon-trash" onclick='codiad.CodeFTP.deleteSel("localSel");'></i>
+                    <i class="icon-arrows-ccw" onclick="codiad.CodeFTP.updateLocalFiles(codiad.CodeFTP.cDir);"></i>
                     Codiad Server: <span id="local_path"></span>
                 </td>
                 <td>
-                    <i class="icon-folder" onclick='codiad.FTP_Client.createFolder("serverSel");'></i>
-                    <i class="icon-trash" onclick='codiad.FTP_Client.deleteSel("serverSel");'></i>
-                    <i class="icon-info" onclick='codiad.FTP_Client.serverInfo();'></i>
-                    <i class="icon-key" onclick='codiad.FTP_Client.serverFileMode();'></i>
-                    <i class="icon-arrows-ccw" onclick="codiad.FTP_Client.updateServerFiles(codiad.FTP_Client.sDir);"></i>
+                    <i class="icon-folder" onclick='codiad.CodeFTP.createFolder("serverSel");'></i>
+                    <i class="icon-trash" onclick='codiad.CodeFTP.deleteSel("serverSel");'></i>
+                    <i class="icon-info" onclick='codiad.CodeFTP.serverInfo();'></i>
+                    <i class="icon-key" onclick='codiad.CodeFTP.serverFileMode();'></i>
+                    <i class="icon-arrows-ccw" onclick="codiad.CodeFTP.updateServerFiles(codiad.CodeFTP.sDir);"></i>
                     FTP Server: <span id="server_path"></span>
                 </td>
             </tr>
@@ -55,6 +53,6 @@
         <div id="ftp_log_div">
             <table id="ftp_log"></table>
         </div>
-        <button onclick="codiad.FTP_Client.closeDialog(); return false;">Close</button>
+        <button onclick="codiad.CodeFTP.closeDialog(); return false;">Close</button>
     </form>
 </div>

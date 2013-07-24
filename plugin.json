@@ -1,13 +1,13 @@
 [{
     "author": "Andr3as",
     "version": "0.1",
-    "name": "FTP-Client",
-    "url": "https://github.com/Andr3as/Codiad-FTP-Client.git",
+    "name": "CodeFTP",
+    "url": "https://github.com/Andr3as/Codiad-CodeFTP.git",
     "rightbar": [
         {
-            "action": "codiad.FTP_Client.showDialog();",
+            "action": "codiad.CodeFTP.showDialog();",
             "icon": "icon-switch",
-            "title": "FTP-Client"
+            "title": "CodeFTP"
         }
     ]
 }]

@@ -1,4 +1,4 @@
-#FTP-Client
+#CodeFTP
 
 This is a plugin for the cloud IDE Codiad. It adds a small ftp client to Codiad.
 
@@ -11,21 +11,21 @@ This is a plugin for the cloud IDE Codiad. It adds a small ftp client to Codiad.
 
 - Filesystem naviagtion
 - Up- and downloading files
-- Create diretories
+- Create directories
 - Change file permission
-- Delete files and diretories
+- Delete files and directories
 - Display file information
 - Multiselection
 
 ##Screenshots
 
-![Screen](http://andrano.de/FTP-Client/img/screen1.jpg "Screen")
+![Screen](http://andrano.de/CodeFTP/img/screen1.jpg "Screen")
 
-![Screen](http://andrano.de/FTP-Client/img/screen2.jpg "Screen")
+![Screen](http://andrano.de/CodeFTP/img/screen2.jpg "Screen")
 
 ###More Information
 
-[http://andrano.de/FTP-Client](http://andrano.de/FTP-Client "More Information")
+[http://andrano.de/CodeFTP](http://andrano.de/CodeFTP "More Information")
 
 
 ###Included

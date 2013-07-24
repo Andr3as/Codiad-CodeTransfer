@@ -12,10 +12,10 @@
         curpath = path.split('/').slice(0, -1).join('/')+'/';
 
     $(function() {
-        codiad.FTP_Client.init();
+        codiad.CodeFTP.init();
     });
 
-    codiad.FTP_Client = {
+    codiad.CodeFTP = {
         
         path        : curpath,
         controller  : curpath + "controller.php",
