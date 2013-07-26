@@ -540,6 +540,53 @@
         
         //////////////////////////////////////////////////////////
         //
+        //  Rename selected files and directory
+        //
+        //  Parameters:
+        //
+        //  selArr - {String} - Name of the array which contains
+        //                          all selected elements
+        //                          serverSel or localSel
+        //
+        //////////////////////////////////////////////////////////
+        renameSel: function(selArr) {
+            var obj, path, newName, old;
+            var type    = selArr.replace("Sel", "");
+            type        = type.substring(0,1).toUpperCase() + type.substring(1);
+            for (var i = 0; i < this[selArr].length; i++) {
+                obj = this[selArr][i].reverse();
+                old = $(obj).text();
+                newName = prompt("Rename "+old+":");
+                path = $(obj).attr('data-path');
+                this.rename(path, type, newName);
+            }
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
+        //  Rename file or directory local or on remote server
+        //
+        //  Parameters:
+		//
+		//  path - {String} - Path of the file with filename
+        //  type - {String} - Location of the file
+        //                      either Server or Local
+        //  newName - {String} - New name of the file or directory
+		//
+		//////////////////////////////////////////////////////////
+        rename: function(path, type, newName) {
+            var _this = this;
+            var old = path.substring(path.lastIndexOf("/")+1);
+            path    = this.getParentDir(path);
+            this.showLoadingAnimation();
+            $.getJSON(this.controller+"?action=rename"+type+"&path="+path+"&old="+old+"&new="+newName, function(data) {
+                _this.hideLoadingAnimation();
+                _this.addLogEntry(data.message);
+            });
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
         //  Display loading circle
         //
         //////////////////////////////////////////////////////////

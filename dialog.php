@@ -25,6 +25,7 @@
                 <td>
                     <i class="icon-folder" onclick='codiad.CodeFTP.createFolder("localSel");'></i>
                     <i class="icon-trash" onclick='codiad.CodeFTP.deleteSel("localSel");'></i>
+                    <i class="icon-pencil" onclick='codiad.CodeFTP.renameSel("localSel");'></i>
                     <i class="icon-arrows-ccw" onclick="codiad.CodeFTP.updateLocalFiles(codiad.CodeFTP.cDir);"></i>
                     Codiad Server: <span id="local_path"></span>
                 </td>
@@ -33,6 +34,7 @@
                     <i class="icon-trash" onclick='codiad.CodeFTP.deleteSel("serverSel");'></i>
                     <i class="icon-info" onclick='codiad.CodeFTP.serverInfo();'></i>
                     <i class="icon-key" onclick='codiad.CodeFTP.serverFileMode();'></i>
+                    <i class="icon-pencil" onclick='codiad.CodeFTP.renameSel("serverSel");'></i>
                     <i class="icon-arrows-ccw" onclick="codiad.CodeFTP.updateServerFiles(codiad.CodeFTP.sDir);"></i>
                     FTP Server: <span id="server_path"></span>
                 </td>

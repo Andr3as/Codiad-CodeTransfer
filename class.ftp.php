@@ -32,7 +32,6 @@
         //  Remote server index (Returns a list of files and directorys on the 
         //      remote server as json) For more information: see parseRawList();
         /////////////////////////////////////////////////////////////////////////
-        
         public function getServerFiles($path) {
             set_time_limit(0);
             $this->connect();
@@ -181,19 +180,6 @@
             $this->disconnect();
             return json_encode($array);
         }
-        // ? EDIT?
-        public function removeLocalDirectory($dir) {
-            set_time_limit(0);
-            $files = array_diff(scandir($dir), array('.','..'));
-            foreach ($files as $file) {
-                if (is_dir("$dir/$file")) {
-                    $this->removeLocalDirectory("$dir/$file");
-                } else {
-                    unlink("$dir/$file");
-                }
-            }
-            return rmdir($dir);
-        }
         
         /////////////////////////////////////////////////////////////////////////
         //  Remove file on remote server
@@ -245,6 +231,28 @@
             } else {
                 $msg = $this->getError("Failed To Change File Mode");
             }
+            $this->disconnect();
+            return json_encode($msg);
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Rename directory or file
+        /////////////////////////////////////////////////////////////////////////
+        public function rename($path, $old, $new) {
+            $this->connect();
+            $msg = array();
+            if (!ftp_chdir($this->id, $path)) {
+                //Directory doesn't exist
+                $msg = $this->getError("Server Directory Doesn't Exist");
+            } else {
+                if (ftp_rename($this->id, $old, $new)) {
+                    $msg['status']  = "success";
+                    $msg['message'] = "Successfully Renamed";
+                } else {
+                    $msg = $this->getError("Failed To Rename");
+                }
+            }
+            
             $this->disconnect();
             return json_encode($msg);
         }

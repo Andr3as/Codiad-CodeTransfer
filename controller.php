@@ -101,8 +101,7 @@
         case 'removeLocalDirectory':
             if (isset($_GET['path'])) {
                 $path = "../../workspace/" . $_GET['path'];
-                $ftp  = new ftp_client();
-                if ($ftp->removeLocalDirectory($path)) {
+                if (removeLocalDirectory($path)) {
                     echo '{"status":"success","message":"Directory Removed"}';
                 } else {
                     echo '{"status":"error","message":"Failed To Remove Directory"}';
@@ -139,8 +138,43 @@
             }
             break;
         
+        case 'renameLocal':
+            if (isset($_GET['path']) && isset($_GET['old']) && isset($_GET['new'])) {
+                $path = "../../workspace/".$_GET['path'];
+                if (rename($path."/".$_GET['old'], $path."/".$_GET['new'])) {
+                    echo '{"status":"success","message":"Successfully Renamed"}';
+                } else {
+                    echo '{"status":"error","message":"Failed To Rename"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing Parameter!"}';
+            }
+            break;
+            
+        case 'renameServer':
+            if (isset($_GET['path']) && isset($_GET['old']) && isset($_GET['new'])) {
+                $ftp = new ftp_client();
+                echo $ftp->rename($_GET['path'], $_GET['old'], $_GET['new']);
+            } else {
+                echo '{"status":"error","message":"Missing Parameter!"}';
+            }
+            break;
+        
         default:
             echo '{"status":"error","message":"No Type"}';
             break;
+    }
+    
+    function removeLocalDirectory($dir) {
+        set_time_limit(0);
+        $files = array_diff(scandir($dir), array('.','..'));
+        foreach ($files as $file) {
+            if (is_dir("$dir/$file")) {
+                removeLocalDirectory("$dir/$file");
+            } else {
+                unlink("$dir/$file");
+            }
+        }
+        return rmdir($dir);
     }
 ?>

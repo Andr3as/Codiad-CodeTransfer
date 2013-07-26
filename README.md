@@ -14,6 +14,7 @@ This is a plugin for the cloud IDE Codiad. It adds a small ftp client to Codiad.
 - Create directories
 - Change file permission
 - Delete files and directories
+- Rename files and directories
 - Display file information
 - Multiselection
 
