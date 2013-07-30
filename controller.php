@@ -7,25 +7,40 @@
 
     require_once('../../common.php');
     require_once('class.ftp.php');
+    require_once('class.scp.php');
+    require_once('class.transfer.php');
     
     checkSession();
     set_time_limit(0);
+    error_reporting(0);
     
     switch($_GET['action']) {
         
+        case 'setMode':
+            if (isset($_GET['mode'])) {
+                if (isset($_SESSION['transfer_type'])) {
+                    echo '{"status":"error","message":"Mode already saved"}';
+                } else {
+                    $_SESSION['transfer_type'] = $_GET['mode'];
+                    echo '{"status":"success","message":"Mode saved"}';
+                }
+            } else {
+                echo '{"status":"error","message":"Missing Parameter"}';
+            }
+            break;
+        
         case 'connect':
             if (isset($_POST['host']) && isset($_POST['user']) && isset($_POST['password']) && isset($_POST['port'])) {
-                $ftp = new ftp_client();
-                $ftp->startConnection($_POST['host'], $_POST['user'], $_POST['password'], $_POST['port']);
+                transfer_controller::startConnection($_POST['host'], $_POST['user'], $_POST['password'], $_POST['port']);
                 echo '{"status":"success","message":"Connection started"}';
             } else {
-                echo '{"status":"error","message":"Connection failed"}';
+                echo '{"status":"error","message":"Missing Parameter"}';
             }
             break;
         
         case 'disconnect':
-            $ftp = new ftp_client();
-            echo $ftp->stopConnection();
+            echo transfer_controller::stopConnection();
+            unset($_SESSION['transfer_type']);
             break;
         
         case 'getServerFiles':
@@ -34,19 +49,16 @@
             } else {
                 $path = "/";
             }
-            $ftp = new ftp_client();
-            echo $ftp->getServerFiles($path);
+            echo transfer_controller::getServerFiles($path);
             break;
             
         case 'getSeverDirectory':
-            $ftp = new ftp_client();
-            echo $ftp->getSeverDirectory;
+            echo transfer_controller::getSeverDirectory();
             break;
         
         case 'transferFileToServer':
             if (isset($_GET['cPath']) && isset($_GET['sPath']) && isset($_GET['fName'])  && isset($_GET['mode'])) {
-                $ftp    = new ftp_client();
-                echo $ftp->transferFileToServer($_GET['cPath'], $_GET['sPath'], $_GET['fName'], $_GET['mode']);
+                echo transfer_controller::transferFileToServer($_GET['cPath'], $_GET['sPath'], $_GET['fName'], $_GET['mode']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }
@@ -54,8 +66,7 @@
             
         case 'transferFileToClient':
             if (isset($_GET['cPath']) && isset($_GET['sPath']) && isset($_GET['fName'])  && isset($_GET['mode'])) {
-                $ftp    = new ftp_client();
-                echo $ftp->transferFileToClient($_GET['cPath'], $_GET['sPath'], $_GET['fName'], $_GET['mode']);
+                echo transfer_controller::transferFileToClient($_GET['cPath'], $_GET['sPath'], $_GET['fName'], $_GET['mode']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }
@@ -77,8 +88,7 @@
         
         case 'createServerDirectory':
             if (isset($_GET['path'])) {
-                $ftp = new ftp_client();
-                echo $ftp->createServerDirectory($_GET['path']);
+                echo transfer_controller::createServerDirectory($_GET['path']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }
@@ -113,8 +123,7 @@
         
         case 'removeServerFile':
             if (isset($_GET['path'])) {
-                $ftp = new ftp_client();
-                echo $ftp->removeServerFile($_GET['path']);
+                echo transfer_controller::removeServerFile($_GET['path']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }
@@ -122,8 +131,7 @@
             
         case 'removeServerDirectory':
             if (isset($_GET['path'])) {
-                $ftp = new ftp_client();
-                echo $ftp->removeServerDirectory($_GET['path']);
+                echo transfer_controller::removeServerDirectory($_GET['path']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }
@@ -131,8 +139,7 @@
             
         case 'changeServerFileMode':
             if (isset($_GET['path']) && isset($_GET['mode'])) {
-                $ftp = new ftp_client();
-                echo $ftp->changeServerFileMode($_GET['path'], $_GET['mode']);
+                echo transfer_controller::changeServerFileMode($_GET['path'], $_GET['mode']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }
@@ -153,8 +160,7 @@
             
         case 'renameServer':
             if (isset($_GET['path']) && isset($_GET['old']) && isset($_GET['new'])) {
-                $ftp = new ftp_client();
-                echo $ftp->rename($_GET['path'], $_GET['old'], $_GET['new']);
+                echo transfer_controller::rename($_GET['path'], $_GET['old'], $_GET['new']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }

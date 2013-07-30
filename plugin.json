@@ -1,13 +1,13 @@
 [{
     "author": "Andr3as",
-    "version": "0.2",
-    "name": "CodeFTP",
-    "url": "https://github.com/Andr3as/Codiad-CodeFTP.git",
+    "version": "1.0",
+    "name": "CodeTransfer",
+    "url": "https://github.com/Andr3as/Codiad-CodeTransfer.git",
     "rightbar": [
         {
-            "action": "codiad.CodeFTP.showDialog();",
+            "action": "codiad.CodeTransfer.showSwitchDialog();",
             "icon": "icon-switch",
-            "title": "CodeFTP"
+            "title": "CodeTransfer"
         }
     ]
 }]

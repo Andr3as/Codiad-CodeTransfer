@@ -6,35 +6,34 @@
  
 @import url(icons.css);
 @import url(loading.css);
- 
-#ftp_form_div {
-    max-height: 70%;
+
+#transfer_form_div {
+    max-height: 80%;
     overflow-x: hidden;
-    overflow-y: scroll;
 }
 
-#ftp_form td {
+#transfer_form td {
     vertical-align: middle;
 }
 
-#ftp_port_td {
+#transfer_port_td {
     width: 80px;
 }
 
-#ftp_connect_td {
+#transfer_connect_td {
     text-align: center;
     padding: 0;
 }
 
-#ftp_list td {
+#transfer_list td {
     vertical-align: top;
 }
 
-#ftp_form li:hover {
+#transfer_form li:hover {
     background-color: rgb(81,81,81);
 }
 
-#ftp_form li {
+#transfer_form li {
     cursor: pointer;
     -moz-user-select: none;
     -khtml-user-select: none;
@@ -42,7 +41,7 @@
     user-select: none;
 }
 
-#ftp_form i {
+#transfer_form i {
     display: inline;
     vertical-align: bottom;
     cursor: pointer;
@@ -50,17 +49,24 @@
 
 .fileList {
     width: 50%;
+    max-height: inherit;
+    overflow-y: scroll;
 }
 
 .selected {
     background-color: rgb(81,81,81);
 }
 
-#ftp_log_div {
+#transfer_log_div {
     max-height: 76px;
     overflow-y: scroll;
 }
 
 .loading {
     height: 10px;
+}
+
+.file_list_div {
+    max-height: 45%;
+    overflow-y: scroll;
 }

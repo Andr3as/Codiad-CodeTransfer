@@ -5,7 +5,7 @@
  * See [root]/license.md for more information. This information must remain intact.
  */
 
-    class ftp_client {
+    class scp_client {
         
         private $id;
         
@@ -13,19 +13,19 @@
         //  Public methods
         /////////////////////////////////////////////////////////////////////////
         public function startConnection($host, $user, $pass, $port) {
-            $_SESSION['ftp_host']   = $host;
-            $_SESSION['ftp_user']   = $user;
-            $_SESSION['ftp_pass']   = $pass;
-            $_SESSION['ftp_port']   = $port;
+            $_SESSION['ssh2_host']   = $host;
+            $_SESSION['ssh2_user']   = $user;
+            $_SESSION['ssh2_pass']   = $pass;
+            $_SESSION['ssh2_port']   = $port;
             $this->connect();
             $this->disconnect();
         }
         
         public function stopConnection() {
-            unset($_SESSION['ftp_host']);
-            unset($_SESSION['ftp_user']);
-            unset($_SESSION['ftp_pass']);
-            unset($_SESSION['ftp_port']);
+            unset($_SESSION['ssh2_host']);
+            unset($_SESSION['ssh2_user']);
+            unset($_SESSION['ssh2_pass']);
+            unset($_SESSION['ssh2_port']);
         }
         
         /////////////////////////////////////////////////////////////////////////
@@ -35,15 +35,17 @@
         public function getServerFiles($path) {
             set_time_limit(0);
             $this->connect();
-            $array  = array();
+            $msg  = array();
             if (isset($this->id)) {
                 //Get index
-                $id = $this->id;
-                if (ftp_chdir($id, $path) === false) {
-                    $this->getError("Impossible to Change Directory");
+                if ($this->execCommand("cd ".$path) === false) {
+                    $msg = $this->getError("Impossible to Change Directory");
                 } else {
-                    $raw    = ftp_rawlist($id, ".");
+                    $raw    = $this->execCommand("ls -al ".$path);
+                    $raw    = explode("\n", $raw);
+                    $raw    = array_slice($raw, 1);
                     $parsed = $this->parseRawList($raw);
+                    $parsed = array_slice($parsed, 1);
                     //Correct style
                     for ($i = 0; $i < count($parsed); $i++) {
                         //Edit type
@@ -64,37 +66,36 @@
                             $parsed[$i]['name'] = $path ."/". $parsed[$i]['name'];
                         }
                     }
-                    $array['status']    = 'success';
-                    $array['files']     = $parsed;
+                    $msg['status']  = 'success';
+                    $msg['files']   = $parsed;
+                    $msg['raw']     = $raw;
+                    $msg['path']    = $path;
                 }
             } else {
                 //Error
                 $this->getError("No Connection ID");
             }
             $this->disconnect();
-            return json_encode($array);
+            return json_encode($msg);
         }
         
         /////////////////////////////////////////////////////////////////////////
         //  Transfer a file to remote server
         /////////////////////////////////////////////////////////////////////////
-        public function transferFileToServer($cPath, $sPath, $fName, $mode) {
-            //$_GET['cPath'], $_GET['sPath'], $_GET['mode']
+        public function transferFileToServer($cPath, $sPath, $fName) {
             set_time_limit(0);
             $this->connect();
             $cPath  = "../../workspace/" . $cPath;
             $msg    = array();
             if (isset($this->id)) {
-                if (!ftp_chdir($this->id, $sPath)) {
+                if ($this->execCommand("cd ".$sPath) === false) {
                     //Create Directory
-					if (ftp_mkdir($this->id, $sPath) === false) {
+                    if ($this->execCommand("mkdir ".$sPath) === false) {
 						//Error
 						$msg = $this->getError("Failed To Create Directory");
 					}
 				} else {
-					$mode = $this->getTransferMode($mode);
-                    
-					if (ftp_put($this->id, $fName, $cPath, $mode)) {
+					if (ssh2_scp_send($this->id, $cPath, $sPath."/".$fName)) {
 						$msg['status']  = 'success';
                         $msg['message'] = 'File Uploaded';
 					} else {
@@ -118,13 +119,11 @@
             $cPath  = "../../workspace/" . $cPath;
             $msg    = array();
             if (isset($this->id)) {
-                if (!ftp_chdir($this->id, $sPath)) {
+                if ($this->execCommand("cd ".$sPath) === false) {
                     //Directory doesn't exist
                     $msg = $this->getError("Server Directory Doesn't Exist");
 				} else {
-					$mode = $this->getTransferMode($mode);
-					
-					if (ftp_get($this->id, $cPath, $fName, $mode)) {
+					if (ssh2_scp_recv($this->id, $sPath."/".$fName, $cPath)) {
 						$msg['status']  = 'success';
                         $msg['message'] = 'File Downloaded';
 					} else {
@@ -145,20 +144,12 @@
         public function createServerDirectory($path) {
             $this->connect();
             $msg = array();
-            $pos = strrpos($path, "/") + 1;
-            $name = substr($path, $pos, strlen($path));
-            $path = substr($path, 0, $pos-1);
-            if (!ftp_chdir($this->id, $path)) {
-                //Directory doesn't exist
-                $msg = $this->getError("Server Directory Doesn't Exist");
+            if ($this->execCommand("mkdir ".$path) === false) {
+                //Error
+                $msg = $this->getError("Failed To Create Directory");
             } else {
-                if (ftp_mkdir($this->id, $name) === false) {
-                    //Error
-                    $msg = $this->getError("Failed To Create Directory");
-                } else {
-                    $msg['status']  = 'success';
-                    $msg['message'] = 'Directory Created';
-                }
+                $msg['status']  = 'success';
+                $msg['message'] = 'Directory Created';
             }
             $this->disconnect();
             return json_encode($msg);
@@ -170,7 +161,7 @@
         public function getSeverDirectory() {
             $this->connect();
             $array  = array();
-            $pwd    = ftp_pwd($this->id);
+            $pwd    = $this->execCommand("cd");
             if ($pwd === false) {
                 $array = $this->getError('Impossible to Get Directory');
             } else {
@@ -188,7 +179,7 @@
             set_time_limit(0);
             $this->connect();
             $msg = array();
-            if (ftp_delete($this->id, $path)) {
+            if ($this->execCommand("rm ".$path) !== false) {
                 $msg['status']  = "success";
                 $msg['message'] = "File Removed";
             } else {
@@ -205,7 +196,7 @@
             set_time_limit(0);
             $this->connect();
             $msg = array();
-            if ($this->removeServerTree($path)) {
+            if ($this->execCommand("rm -R ".$path) !== false) {
                 $msg['status']  = "success";
                 $msg['message'] = "Directory Removed";
             } else {
@@ -216,16 +207,12 @@
         }
         
         /////////////////////////////////////////////////////////////////////////
-        //  Change permissions of file on remote server
+        //  Change permissions of file or directory on remote server
         /////////////////////////////////////////////////////////////////////////
         public function changeServerFileMode($path, $mode) {
             $this->connect();
             $msg    = array();
-            if ($mode[0] != '0') {
-                $mode = '0'.$mode;
-            }
-            $mode   = intval($mode, 8);
-            if (ftp_chmod($this->id, $mode, $path) !== false) {
+            if ($this->execCommand("chmod -R ".$mode." ".$path) !== false) {
                 $msg['status']  = "success";
                 $msg['message'] = "Permissions Changed";
             } else {
@@ -241,16 +228,11 @@
         public function rename($path, $old, $new) {
             $this->connect();
             $msg = array();
-            if (!ftp_chdir($this->id, $path)) {
-                //Directory doesn't exist
-                $msg = $this->getError("Server Directory Doesn't Exist");
+            if ($this->execCommand("mv ".$path."/".$old." ".$path."/".$new) !== false) {
+                $msg['status']  = "success";
+                $msg['message'] = "Successfully Renamed";
             } else {
-                if (ftp_rename($this->id, $old, $new)) {
-                    $msg['status']  = "success";
-                    $msg['message'] = "Successfully Renamed";
-                } else {
-                    $msg = $this->getError("Failed To Rename");
-                }
+                $msg = $this->getError("Failed To Rename");
             }
             
             $this->disconnect();
@@ -267,11 +249,11 @@
         //  Connect remote server
         /////////////////////////////////////////////////////////////////////////
         private function connect() {
-            $connection_id = ftp_connect($_SESSION['ftp_host'], $_SESSION['ftp_port']);
+            $connection_id = ssh2_connect($_SESSION['ssh2_host'], $_SESSION['ssh2_port']);
             if ($connection_id === false) {
                 die('{"status":"error","message":"Connection failed! Wrong Host or Port?"}');
             }
-            $login_result = ftp_login($connection_id, $_SESSION['ftp_user'], $_SESSION['ftp_pass']);
+            $login_result = ssh2_auth_password($connection_id, $_SESSION['ssh2_user'], $_SESSION['ssh2_pass']);
             if ($login_result === false) {
                 die('{"status":"error","message":"Connection failed! Wrong Username or Password?"}');
             }
@@ -282,24 +264,21 @@
         //  Disconnect remote server
         /////////////////////////////////////////////////////////////////////////
         private function disconnect() {
-            ftp_close($this->id);
+            $this->execCommand("exit;");
             unset($this->id);
         }
         
-        private function removeServerTree($path) {
-            set_time_limit(0);
-            if (!isset($this->id)) {
+        private function execCommand($cmd) {
+            if (!($stream = ssh2_exec($this->id, $cmd))) {
                 return false;
             }
-            $files = $this->parseRawList(ftp_rawlist($this->id, $path));
-            foreach ($files as $file) {
-                if ($file['type'] == 'd') {
-                    $this->removeServerTree($path.'/'.$file['name']);
-                } else {
-                    ftp_delete($this->id, $path.'/'.$file['name']);
-                }
+            stream_set_blocking($stream, true);
+            $result = "";
+            while ($buf = fread($stream, 4096)) {
+                $result .= $buf;
             }
-            return ftp_rmdir($this->id, $path);
+            fclose($stream);
+            return $result;
         }
         
         private function getError($msg) {
@@ -309,21 +288,10 @@
             return $error;
         }
         
-        /////////////////////////////////////////////////////////////////////////
-        //  Parse transfermode
-        /////////////////////////////////////////////////////////////////////////
-        private function getTransferMode($mode) {
-            //Workaround
-			if ($mode == "FTP_ASCII") {
-				return FTP_ASCII;
-			} else {
-				return FTP_BINARY;
-			}
-        }
-        
         private function parseRawList($rawList)
         {
             //@Do not touch - More: http://de3.php.net/manual/de/function.ftp-rawlist.php#110561
+            //@Do not touch - 26.07.2013 - Andr3as
             $start = 2;
             $orderList = array("d", "l", "-");
             $typeCol = "type";

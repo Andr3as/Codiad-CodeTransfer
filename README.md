@@ -1,6 +1,6 @@
-#CodeFTP
+#CodeTransfer
 
-This is a plugin for the cloud IDE Codiad. It adds a small ftp client to Codiad.
+This is a plugin for the cloud IDE Codiad. It allows to FTP or SCP connection to remote servers.
 
 ##Installation
 
@@ -18,15 +18,22 @@ This is a plugin for the cloud IDE Codiad. It adds a small ftp client to Codiad.
 - Display file information
 - Multiselection
 
+##SCP/SFTP
+
+- OpenSSL and libssh2 are required
+- Installation: [http://de2.php.net/manual/en/ssh2.installation.php](Installation on php.net "More Information")
+
 ##Screenshots
 
-![Screen](http://andrano.de/CodeFTP/img/screen1.jpg "Screen")
+#####FTP
+![Screen](http://andrano.de/CodeTransfer/img/screen1.jpg "Screen")
 
-![Screen](http://andrano.de/CodeFTP/img/screen2.jpg "Screen")
+#####SCP
+![Screen](http://andrano.de/CodeTransfer/img/screen2.jpg "Screen")
 
 ###More Information
 
-[http://andrano.de/CodeFTP](http://andrano.de/CodeFTP "More Information")
+[http://andrano.de/CodeTransfer](http://andrano.de/CodeTransfer "More Information")
 
 
 ###Included

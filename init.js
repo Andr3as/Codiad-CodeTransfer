@@ -12,10 +12,10 @@
         curpath = path.split('/').slice(0, -1).join('/')+'/';
 
     $(function() {
-        codiad.CodeFTP.init();
+    codiad.CodeTransfer.init();
     });
 
-    codiad.CodeFTP = {
+codiad.CodeTransfer = {
         
         path        : curpath,
         controller  : curpath + "controller.php",
@@ -25,14 +25,29 @@
         sDir        : "/",
         localSel    : [],
         serverSel   : [],
+        mode        : "ftp",
         
         init: function() {
         },
         
-        showDialog: function() {
+        showSwitchDialog: function() {
+            codiad.modal.load(300,this.path+'dialog.php?action=switch');
+        },
+        
+        setMode: function(mode) {
+            this.mode = mode;
+            $.getJSON(this.controller+"?action=setMode&mode="+mode, function(data){
+                if (data.status == "error") {
+                    alert(data.message);
+                }
+            });
+        },
+        
+        showDialog: function(mode) {
             var _this     = this;
-            codiad.modal.load(1000,this.path+'dialog.php');
-            $('#ftp_form').ready(function(){
+            this.setMode(mode);
+            codiad.modal.load(1000,this.path+'dialog.php?action='+mode);
+            $('#transfer_form').ready(function(){
                 //Hide Loading
                 _this.hideLoadingAnimation();
                 //List Local Files
@@ -61,9 +76,9 @@
 		//
 		//////////////////////////////////////////////////////////
         addLogEntry: function(entry) {
-            var last = $('#ftp_log').html().replace("<tbody>", "").replace("</tbody>", "");
+            var last = $('#transfer_log').html().replace("<tbody>", "").replace("</tbody>", "");
             entry = "<tr><td>" + entry + "</td></tr>" + last;
-            $('#ftp_log').html(entry);
+            $('#transfer_log').html(entry);
         },
         
         //////////////////////////////////////////////////////////
@@ -104,13 +119,17 @@
             }
             
             $(id).html(insert);
-            if ("#ftp_localList" == id) {
+            if ("#transfer_localList" == id) {
                 this.updateLocalClick();
                 $('#local_path').text(this.cDir);
-            } else if ("#ftp_serverList" == id) {
+            } else if ("#transfer_serverList" == id) {
                 this.updateServerClick();
                 $('#server_path').text(this.sDir);
             }
+            //Set max-height absolute
+            $('.file_list_div').css('max-height', function(){
+                return 0.4*window.innerHeight + "px";
+            });
         },
         
         //////////////////////////////////////////////////////////
@@ -125,14 +144,14 @@
         updateServerFiles: function(path) {
             var _this = this;
             this.showLoadingAnimation();
-            $.getJSON(this.controller+"?action=getServerFiles&path="+path, function(data) {
+            console.log($.getJSON(this.controller+"?action=getServerFiles&path="+path, function(data) {
                 _this.hideLoadingAnimation();
                 if (data.status == 'error') {
                     _this.addLogEntry(data.message);
                 } else {
-                    _this.updateList(data.files, "#ftp_serverList", _this.sDir);
+                    _this.updateList(data.files, "#transfer_serverList", _this.sDir);
                 }
-            });
+            }));
         },
         
         //////////////////////////////////////////////////////////
@@ -151,7 +170,7 @@
                 function(data) {
                     _this.hideLoadingAnimation();
                     codiad.filemanager.rescan(_this.cBase);
-                    _this.updateList(data.data.index, '#ftp_localList', _this.cDir);
+                    _this.updateList(data.data.index, '#transfer_localList', _this.cDir);
             });
         },
         
@@ -214,13 +233,13 @@
         updateLocalClick: function() {
             var _this = this;
             //Remove old selections
-            $('#ftp_localList li').removeClass("selected");
+            $('#transfer_localList li').removeClass("selected");
             this.localSel = [];
             //Add new listener
-            $('#ftp_localList li').click(function(e){
-                _this.handleSelection(this, e, 'localSel', '#ftp_localList li');
+            $('#transfer_localList li').click(function(e){
+                _this.handleSelection(this, e, 'localSel', '#transfer_localList li');
             });
-            $('#ftp_localList li').dblclick(function(){
+            $('#transfer_localList li').dblclick(function(){
                 var path = $(this).attr('data-path');
                 if ($(this).attr('data-type') == 'directory') {
                     //Open dir
@@ -229,11 +248,11 @@
                     }
                     _this.cDir = path;
                     _this.updateLocalFiles(path);
-                    _this.addLogEntry('Directory changed');
+                    _this.addLogEntry('Directory Changed');
                 } else {
                     //Transfer file
                     var file = $(this).text();
-                    var mode = $('#ftp_mode').val();
+                    var mode = $('#transfer_mode').val();
                     _this.transferFileToServer(path, _this.sDir, file, mode);
                 }
             });
@@ -247,13 +266,13 @@
         updateServerClick: function() {
             var _this = this;
             //Remove old selections
-            $('#ftp_serverList li').removeClass("selected");
+            $('#transfer_serverList li').removeClass("selected");
             this.serverSel = [];
             //Add new listener
-            $('#ftp_serverList li').click(function(e){
-                _this.handleSelection(this, e, 'serverSel', '#ftp_serverList li');
+            $('#transfer_serverList li').click(function(e){
+                _this.handleSelection(this, e, 'serverSel', '#transfer_serverList li');
             });
-            $('#ftp_serverList li').dblclick(function(){
+            $('#transfer_serverList li').dblclick(function(){
                 var path = $(this).attr('data-path');
                 if ($(this).attr('data-type') == 'directory') {
                     //Open dir
@@ -265,7 +284,7 @@
                     _this.addLogEntry('Directory changed');
                 } else {
                     var file = $(this).text();
-                    var mode = $('#ftp_mode').val();
+                    var mode = $('#transfer_mode').val();
                     _this.transferFileToClient(_this.cDir+'/'+file, _this.sDir, file, mode);
                 }
             });
@@ -284,8 +303,8 @@
         //                          all selected elements
         //                          serverSel or localSel
         //  listSel - {String} - jQuery file list item selector
-        //                          "ftp_localList li" or
-        //                          "ftp_serverList li"
+        //                          "transfer_localList li" or
+        //                          "transfer_serverList li"
         //
         //////////////////////////////////////////////////////////
         handleSelection: function(item, e, selArr, listSel) {
@@ -511,10 +530,16 @@
             var obj, path;
             for (var i = 0; i < this.serverSel.length; i++) {
                 obj = this.serverSel[i].reverse();
-                if ($(obj).attr('data-type') == 'file') {
+                if (this.mode == "ftp") {
+                    if ($(obj).attr('data-type') == 'file') {
+                        path = $(obj).attr('data-path');
+                        this.changeFileMode(path, mode);
+                    }
+                } else {
                     path = $(obj).attr('data-path');
                     this.changeFileMode(path, mode);
                 }
+                
             }
         },
         
@@ -532,10 +557,10 @@
         changeFileMode: function(path, mode) {
             var _this = this;
             this.showLoadingAnimation();
-            $.getJSON(this.controller+"?action=changeServerFileMode&path="+path+"&mode="+mode, function(data) {
+            console.log($.getJSON(this.controller+"?action=changeServerFileMode&path="+path+"&mode="+mode, function(data) {
                 _this.hideLoadingAnimation();
                 _this.addLogEntry(data.message);
-            });
+            }));
         },
         
         //////////////////////////////////////////////////////////
@@ -587,6 +612,32 @@
         
         //////////////////////////////////////////////////////////
         //
+        //  Get current directory of remote server
+        //
+        //  Parameters:
+        //
+		//  isBase - {Boolean} - Set current directory as server
+        //                          base directory
+        //  update - {Boolean} - Update the value of the form
+		//
+		//////////////////////////////////////////////////////////
+        getServerDirectory: function(isBase, update) {
+            var _this = this;
+            $.getJSON(this.controller+"?action=getSeverDirectory", function(data){
+                if (data.status != 'error') {
+                    _this.sDir = data.dir;
+                    if (isBase) {
+                        _this.sBase = data.dir;
+                    }
+                    if (update) {
+                        $('#server_path').text(_this.sDir);
+                    }
+                }
+            });
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
         //  Display loading circle
         //
         //////////////////////////////////////////////////////////
@@ -624,10 +675,10 @@
         //////////////////////////////////////////////////////////
         connect: function() {
             var _this= this;
-            var host = $('#ftp_host').val();
-            var user = $('#ftp_user').val();
-            var pass = $('#ftp_password').val();
-            var port = $('#ftp_port').val();
+            var host = $('#transfer_host').val();
+            var user = $('#transfer_user').val();
+            var pass = $('#transfer_password').val();
+            var port = $('#transfer_port').val();
             this.showLoadingAnimation();
             $.post(_this.controller+"?action=connect", {"host":host, "user":user, "password":pass, "port":port}, function(data) {
                 _this.hideLoadingAnimation();
