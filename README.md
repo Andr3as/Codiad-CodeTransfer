@@ -1,6 +1,6 @@
 #CodeTransfer
 
-This is a plugin for the cloud IDE Codiad. It allows to FTP or SCP connection to remote servers.
+This is a plugin for the cloud IDE Codiad. It allows FTP or SCP connection to remote servers.
 
 ##Installation
 

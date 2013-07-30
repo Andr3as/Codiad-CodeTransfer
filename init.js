@@ -144,14 +144,14 @@ codiad.CodeTransfer = {
         updateServerFiles: function(path) {
             var _this = this;
             this.showLoadingAnimation();
-            console.log($.getJSON(this.controller+"?action=getServerFiles&path="+path, function(data) {
+            $.getJSON(this.controller+"?action=getServerFiles&path="+path, function(data) {
                 _this.hideLoadingAnimation();
                 if (data.status == 'error') {
                     _this.addLogEntry(data.message);
                 } else {
                     _this.updateList(data.files, "#transfer_serverList", _this.sDir);
                 }
-            }));
+            });
         },
         
         //////////////////////////////////////////////////////////
@@ -557,10 +557,10 @@ codiad.CodeTransfer = {
         changeFileMode: function(path, mode) {
             var _this = this;
             this.showLoadingAnimation();
-            console.log($.getJSON(this.controller+"?action=changeServerFileMode&path="+path+"&mode="+mode, function(data) {
+            $.getJSON(this.controller+"?action=changeServerFileMode&path="+path+"&mode="+mode, function(data) {
                 _this.hideLoadingAnimation();
                 _this.addLogEntry(data.message);
-            }));
+            });
         },
         
         //////////////////////////////////////////////////////////
