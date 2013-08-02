@@ -45,25 +45,45 @@
                     $raw    = ftp_rawlist($id, ".");
                     $parsed = $this->parseRawList($raw);
                     //Correct style
+                    $dirs   = array();
+                    $files  = array();
                     for ($i = 0; $i < count($parsed); $i++) {
-                        //Edit type
-                        $type = $parsed[$i]['type'];
-                        if ($type == 'd') {
-                            $parsed[$i]['type'] = "directory";
-                        } else if ($type == 'l') {
-                            $parsed[$i]['type'] = "linked";
-                        } else if ($type == '-') {
-                            $parsed[$i]['type'] = "file";
-                        } else {
-                            $parsed[$i]['type'] = "error";
-                        }
                         //Change Name
+                        $parsed[$i]['fName'] = $parsed[$i]['name'];
                         if ($path == "/") {
                             $parsed[$i]['name'] = $path . $parsed[$i]['name'];
                         } else {
                             $parsed[$i]['name'] = $path ."/". $parsed[$i]['name'];
                         }
+                        //Edit type
+                        $type = $parsed[$i]['type'];
+                        if ($type == 'd') {
+                            $parsed[$i]['type'] = "directory";
+                        } else if ($type == 'l') {
+                            if (is_dir('ftp://'.$_SESSION['ftp_user'].':'.$_SESSION['ftp_pass'].'@'.$_SESSION['ftp_host'].$parsed[$i]['name'])) {
+                                //Is directory
+                                $parsed[$i]['type'] = "directory";
+                            } else {
+                                //Is file
+                                $parsed[$i]['type'] = "file";
+                            }
+                        } else if ($type == '-') {
+                            $parsed[$i]['type'] = "file";
+                        } else {
+                            $parsed[$i]['type'] = "error";
+                        }
+                        //Sort entries I
+                        if ($parsed[$i]['type'] == "directory") {
+                            array_push($dirs, $parsed[$i]);
+                        } else {
+                            array_push($files, $parsed[$i]);
+                        }
                     }
+                    //Sort entries II
+                    usort($dirs, "transfer_controller::mySort");
+                    usort($files, "transfer_controller::mySort");
+                    $parsed = array_merge($dirs, $files);
+                    //Result
                     $array['status']    = 'success';
                     $array['files']     = $parsed;
                 }

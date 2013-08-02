@@ -144,5 +144,30 @@
                 return $ssh2->rename($path, $old, $new);
             }
         }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Sort an array of a server index
+        /////////////////////////////////////////////////////////////////////////
+        static public function mySort($a, $b) {
+            $d = self::editString($a['fName']);
+            $e = self::editString($b['fName']);
+            $c = array($d, $e);
+            sort($c);
+            if ($d == $e) {
+                return 0;
+            }
+            if ($c[0] == $d) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+        
+        static public function editString($str) {
+            if (substr($str, 0, 1) == ".") {
+                $str = substr($str, 1);
+            }
+            return strtolower($str);
+        }
     }
 ?>

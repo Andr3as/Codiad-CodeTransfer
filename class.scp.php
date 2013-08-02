@@ -33,7 +33,6 @@
         //      remote server as json) For more information: see parseRawList();
         /////////////////////////////////////////////////////////////////////////
         public function getServerFiles($path) {
-            set_time_limit(0);
             $this->connect();
             $msg  = array();
             if (isset($this->id)) {
@@ -41,35 +40,54 @@
                 if ($this->execCommand("cd ".$path) === false) {
                     $msg = $this->getError("Impossible to Change Directory");
                 } else {
-                    $raw    = $this->execCommand("ls -al ".$path);
+                    $raw    = $this->execCommand("ls -al ".$path."/");
                     $raw    = explode("\n", $raw);
                     $raw    = array_slice($raw, 1);
                     $parsed = $this->parseRawList($raw);
                     $parsed = array_slice($parsed, 1);
                     //Correct style
+                    $dirs   = array();
+                    $files  = array();
                     for ($i = 0; $i < count($parsed); $i++) {
-                        //Edit type
-                        $type = $parsed[$i]['type'];
-                        if ($type == 'd') {
-                            $parsed[$i]['type'] = "directory";
-                        } else if ($type == 'l') {
-                            $parsed[$i]['type'] = "linked";
-                        } else if ($type == '-') {
-                            $parsed[$i]['type'] = "file";
-                        } else {
-                            $parsed[$i]['type'] = "error";
-                        }
                         //Change Name
+                        $parsed[$i]['fName'] = $parsed[$i]['name'];
                         if ($path == "/") {
                             $parsed[$i]['name'] = $path . $parsed[$i]['name'];
                         } else {
                             $parsed[$i]['name'] = $path ."/". $parsed[$i]['name'];
                         }
+                        //Edit type
+                        $type = $parsed[$i]['type'];
+                        if ($type == 'd') {
+                            $parsed[$i]['type'] = "directory";
+                        } else if ($type == 'l') {
+                            //$parsed[$i]['type'] = "linked";
+                            if ($this->execCommand("ls -al ".$parsed[$i]['name']."/") !== "") {
+                                //Is directory
+                                $parsed[$i]['type'] = "directory";
+                            } else {
+                                //Is file
+                                $parsed[$i]['type'] = "file";
+                            }
+                        } else if ($type == '-') {
+                            $parsed[$i]['type'] = "file";
+                        } else {
+                            $parsed[$i]['type'] = "error";
+                        }
+                        //Sort entries I
+                        if ($parsed[$i]['type'] == "directory") {
+                            array_push($dirs, $parsed[$i]);
+                        } else {
+                            array_push($files, $parsed[$i]);
+                        }
                     }
+                    //Sort entries II
+                    usort($dirs, "transfer_controller::mySort");
+                    usort($files, "transfer_controller::mySort");
+                    $parsed = array_merge($dirs, $files);
+                    //Result
                     $msg['status']  = 'success';
                     $msg['files']   = $parsed;
-                    $msg['raw']     = $raw;
-                    $msg['path']    = $path;
                 }
             } else {
                 //Error
