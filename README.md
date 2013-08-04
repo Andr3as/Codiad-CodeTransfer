@@ -18,7 +18,7 @@ This is a plugin for the cloud IDE Codiad. It allows FTP or SCP connection to re
 - Display file information
 - Multiselection
 
-##SCP/SFTP
+##SCP
 
 - OpenSSL and libssh2 are required
 - Installation: [http://de2.php.net/manual/en/ssh2.installation.php](Installation on php.net "More Information")
