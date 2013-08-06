@@ -13,6 +13,7 @@ This is a plugin for the cloud IDE Codiad. It allows FTP or SCP connection to re
 - Up- and downloading files
 - Create directories
 - Change file permission
+- Change group (scp)
 - Delete files and directories
 - Rename files and directories
 - Display file information

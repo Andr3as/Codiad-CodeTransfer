@@ -258,6 +258,23 @@
         }
         
         /////////////////////////////////////////////////////////////////////////
+        //  Rename directory or file
+        /////////////////////////////////////////////////////////////////////////
+        public function changeServerGroup($path, $name) {
+            $this->connect();
+            $msg    = array();
+            if ($this->execCommand("chgrp -R $name $path") !== false) {
+                $msg['status']  = "success";
+                $msg['message'] = "Group Changed";
+                $msg['res'] = $res;
+            } else {
+                $msg = $this->getError("Failed To Change Group");
+            }
+            $this->disconnect();
+            return json_encode($msg);
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
         //
         //  Private methods
         //

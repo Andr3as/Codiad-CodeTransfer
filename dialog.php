@@ -59,7 +59,9 @@
                                 <td>
                                     <i class="icon-folder" onclick='codiad.CodeTransfer.createFolder("localSel");'></i>
                                     <i class="icon-trash" onclick='codiad.CodeTransfer.deleteSel("localSel");'></i>
-                                    <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("localSel");'></i>
+                                    <i class="icon-info" onclick='codiad.CodeTransfer.localInfo();'></i>
+                                    <i class="icon-key" onclick='codiad.CodeTransfer.fileModeSel("localSel");'></i>
+                                    <i class="icon-pencil" onclick="codiad.CodeTransfer.renameSel('localSel');"></i>
                                     <i class="icon-arrows-ccw" onclick="codiad.CodeTransfer.updateLocalFiles(codiad.CodeTransfer.cDir);"></i>
                                     Codiad Server: <span id="local_path"></span>
                                 </td>
@@ -67,7 +69,12 @@
                                     <i class="icon-folder" onclick='codiad.CodeTransfer.createFolder("serverSel");'></i>
                                     <i class="icon-trash" onclick='codiad.CodeTransfer.deleteSel("serverSel");'></i>
                                     <i class="icon-info" onclick='codiad.CodeTransfer.serverInfo();'></i>
-                                    <i class="icon-key" onclick='codiad.CodeTransfer.serverFileMode();'></i>
+                                    <i class="icon-key" onclick='codiad.CodeTransfer.fileModeSel("serverSel");'></i>
+                                    <?php
+                                        if ($_GET['action'] == 'scp') {
+                                            echo '<i class="icon-users" onclick="codiad.CodeTransfer.changeGroupSel(\'serverSel\');"></i>';
+                                        }
+                                    ?>
                                     <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("serverSel");'></i>
                                     <i class="icon-arrows-ccw" onclick="codiad.CodeTransfer.updateServerFiles(codiad.CodeTransfer.sDir);"></i>
                                     <?php

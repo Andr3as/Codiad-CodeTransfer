@@ -146,6 +146,18 @@
         }
         
         /////////////////////////////////////////////////////////////////////////
+        //  Rename directory or file
+        /////////////////////////////////////////////////////////////////////////
+        static public function changeServerGroup($path, $name) {
+            if ($_SESSION['transfer_type'] == "ftp") {
+                return '{"status":"error","message":"FTP: Impossible To Change Group"}';
+            } else {
+                $ssh2 = new scp_client();
+                return $ssh2->changeServerGroup($path, $name);
+            }
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
         //  Sort an array of a server index
         /////////////////////////////////////////////////////////////////////////
         static public function mySort($a, $b) {

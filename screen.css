@@ -12,21 +12,13 @@
     overflow-x: hidden;
 }
 
+#transfer_form abbr {
+    cursor: pointer;
+    border-bottom: 1px dashed white;
+}
+
 #transfer_form td {
     vertical-align: middle;
-}
-
-#transfer_port_td {
-    width: 80px;
-}
-
-#transfer_connect_td {
-    text-align: center;
-    padding: 0;
-}
-
-#transfer_list td {
-    vertical-align: top;
 }
 
 #transfer_form li:hover {
@@ -45,6 +37,19 @@
     display: inline;
     vertical-align: bottom;
     cursor: pointer;
+}
+
+#transfer_port_td {
+    width: 80px;
+}
+
+#transfer_connect_td {
+    text-align: center;
+    padding: 0;
+}
+
+#transfer_list td {
+    vertical-align: top;
 }
 
 .fileList {
