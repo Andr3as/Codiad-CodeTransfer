@@ -4,7 +4,7 @@
  * as-is and without warranty under the MIT License. 
  * See [root]/license.md for more information. This information must remain intact.
  */
-
+    
     require_once('../../common.php');
     require_once('class.ftp.php');
     require_once('class.scp.php');
@@ -268,13 +268,15 @@
                 $result['status'] = "error";
                 $result['message'] = "owner";
             } else {
-                $info['owner'] = posix_getpwuid($owner)['name'];
+                $owner          = posix_getpwuid($owner);
+                $info['owner']  = $owner['name'];
             }
             $grp = filegroup($path);
             if ($grp === false) {
                 $result['status'] = "error";
             } else {
-                $info['group'] = posix_getgrgid($grp)['name'];
+                $grp            = posix_getgrgid($grp);
+                $info['group']  = $grp['name'];
             }
             array_push($resInfo, $info);
         }
