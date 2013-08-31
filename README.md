@@ -22,7 +22,7 @@ This is a plugin for the cloud IDE Codiad. It allows FTP or SCP connection to re
 ##SCP
 
 - OpenSSL and libssh2 are required
-- Installation: [http://de2.php.net/manual/en/ssh2.installation.php](Installation on php.net "More Information")
+- Installation: [Installation on php.net](http://de2.php.net/manual/en/ssh2.installation.php "More Information")
 
 ##Screenshots
 
@@ -40,7 +40,7 @@ This is a plugin for the cloud IDE Codiad. It allows FTP or SCP connection to re
 ###Included
 
 ####CSS Loading animation
-[http://codepen.io/rlemon/pen/KyDgh](CSS Loading "More Information")
+[CSS Loading](http://codepen.io/rlemon/pen/KyDgh "More Information")
 
 #####Released under MIT License
-[http://blog.codepen.io/legal/licensing/](License of CodePen "More Information")
+[License of CodePen](http://blog.codepen.io/legal/licensing/ "More Information")
