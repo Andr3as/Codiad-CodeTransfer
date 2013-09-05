@@ -4,6 +4,7 @@
  * as-is and without warranty under the MIT License. 
  * See [root]/license.md for more information. This information must remain intact.
  */
+    error_reporting(0);
     
     require_once('../../common.php');
     require_once('class.ftp.php');
@@ -12,9 +13,6 @@
     
     checkSession();
     set_time_limit(0);
-    error_reporting(0);
-    
-    $localPath = "../../workspace/";
     
     switch($_GET['action']) {
         
@@ -60,7 +58,8 @@
         
         case 'transferFileToServer':
             if (isset($_GET['cPath']) && isset($_GET['sPath']) && isset($_GET['fName'])  && isset($_GET['mode'])) {
-                echo transfer_controller::transferFileToServer($_GET['cPath'], $_GET['sPath'], $_GET['fName'], $_GET['mode']);
+                $path = transfer_controller::getWorkspacePath($_GET['cPath']);
+                echo transfer_controller::transferFileToServer($path, $_GET['sPath'], $_GET['fName'], $_GET['mode']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }
@@ -68,7 +67,8 @@
             
         case 'transferFileToClient':
             if (isset($_GET['cPath']) && isset($_GET['sPath']) && isset($_GET['fName'])  && isset($_GET['mode'])) {
-                echo transfer_controller::transferFileToClient($_GET['cPath'], $_GET['sPath'], $_GET['fName'], $_GET['mode']);
+                $path = transfer_controller::getWorkspacePath($_GET['cPath']);
+                echo transfer_controller::transferFileToClient($path, $_GET['sPath'], $_GET['fName'], $_GET['mode']);
             } else {
                 echo '{"status":"error","message":"Missing Parameter!"}';
             }
@@ -76,8 +76,7 @@
             
         case 'createLocalDirectory':
             if (isset($_GET['path'])) {
-                $path = $_GET['path'];
-                $path = $localPath . $path;
+                $path = transfer_controller::getWorkspacePath($_GET['path']);
                 if (mkdir($path)) {
                     echo '{"status":"success","message":"Directory Created"}';
                 } else {
@@ -99,7 +98,7 @@
         //action=remove"+data+type+"&path="+path
         case 'removeLocalFile':
             if (isset($_GET['path'])) {
-                $path = $localPath . $_GET['path'];
+                $path = transfer_controller::getWorkspacePath($_GET['path']);
                 if (unlink($path)) {
                     echo '{"status":"success","message":"File Removed"}';
                 } else {
@@ -112,7 +111,7 @@
         
         case 'removeLocalDirectory':
             if (isset($_GET['path'])) {
-                $path = $localPath . $_GET['path'];
+                $path = transfer_controller::getWorkspacePath($_GET['path']);
                 if (removeLocalDirectory($path)) {
                     echo '{"status":"success","message":"Directory Removed"}';
                 } else {
@@ -141,7 +140,7 @@
         
         case 'changeLocalFileMode':
             if (isset($_GET['path']) && isset($_GET['mode'])) {
-                $path = $localPath . $_GET['path'];
+                $path = transfer_controller::getWorkspacePath($_GET['path']);
                 $mode = $_GET['mode'];
                 if ($mode[0] != '0') {
                     $mode = '0'.$mode;
@@ -167,7 +166,7 @@
         
         case 'renameLocal':
             if (isset($_GET['path']) && isset($_GET['old']) && isset($_GET['new'])) {
-                $path = $localPath . $_GET['path'];
+                $path = transfer_controller::getWorkspacePath($_GET['path']);
                 if (rename($path."/".$_GET['old'], $path."/".$_GET['new'])) {
                     echo '{"status":"success","message":"Successfully Renamed"}';
                 } else {
@@ -235,7 +234,7 @@
         $resInfo= array();
         $result['status'] = "success";
         foreach($files as $path) {
-            $path = "../../workspace/" . $path;
+            $path = transfer_controller::getWorkspacePath($path);
             $info['name'] = basename($path);
             $size = filesize($path);
             if ($size === false) {

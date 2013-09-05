@@ -103,7 +103,6 @@
         public function transferFileToServer($cPath, $sPath, $fName) {
             set_time_limit(0);
             $this->connect();
-            $cPath  = "../../workspace/" . $cPath;
             $msg    = array();
             if (isset($this->id)) {
                 if ($this->execCommand("cd ".$sPath) === false) {
@@ -134,7 +133,6 @@
         public function transferFileToClient($cPath, $sPath, $fName, $mode) {
             set_time_limit(0);
             $this->connect();
-            $cPath  = "../../workspace/" . $cPath;
             $msg    = array();
             if (isset($this->id)) {
                 if ($this->execCommand("cd ".$sPath) === false) {
