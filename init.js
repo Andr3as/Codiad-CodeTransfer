@@ -720,10 +720,10 @@ codiad.CodeTransfer = {
         changeGroup: function(path, type, newGroup) {
             var _this   = this;
             this.showLoadingAnimation();
-            console.log($.getJSON(this.controller+"?action=change"+type+"Group&path="+path+"&grpName="+newGroup, function(data) {
+            $.getJSON(this.controller+"?action=change"+type+"Group&path="+path+"&grpName="+newGroup, function(data) {
                 _this.hideLoadingAnimation();
                 _this.addLogEntry(data.message);
-            }));
+            });
         },
         
         //////////////////////////////////////////////////////////
