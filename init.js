@@ -430,7 +430,7 @@ codiad.CodeTransfer = {
                     this.deleteObject(this[selArr][i], selArr);
                 }
                 //Delete Selection
-                this[selArr] = [];
+                this.unselect(selArr);
             }
         },
         
@@ -750,6 +750,53 @@ codiad.CodeTransfer = {
                     }
                 }
             });
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
+        //  Transfer selection
+        //
+        //  Parameters:
+        //
+        //  selArr - {String} - Name of the array which contains
+        //                          all selected elements
+        //                          serverSel or localSel
+        //
+        //////////////////////////////////////////////////////////
+        transferSel: function(selArr) {
+            var mode    = $('#transfer_mode').val();
+            var source  = selArr.replace("Sel", "");
+            var obj, path, file;
+			for (var i = 0; i < this[selArr].length; i++) {
+				obj = this[selArr][i].reverse();
+				file = $(obj).text();
+				path = $(obj).attr("data-path");
+				if (source == "local") {
+					//TransferFileToServer
+                    this.transferFileToServer(path, this.sDir, file, mode);
+				} else {
+					//TransferFileToClient
+                    this.transferFileToClient(this.cDir+"/"+file, this.sDir, file, mode);
+				}
+            }
+            this.unselect(selArr);
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
+        //  Delete selection
+        //
+        //  Parameters:
+        //
+        //  selArr - {String} - Name of the array which contains
+        //                          all selected elements
+        //                          serverSel or localSel
+        //
+        //////////////////////////////////////////////////////////
+        unselect: function(selArr) {
+            selList         = selArr.replace("Sel", "List");
+            this[selArr]    = [];
+            $('#transfer_'+selList+" li").removeClass("selected");
         },
         
         //////////////////////////////////////////////////////////

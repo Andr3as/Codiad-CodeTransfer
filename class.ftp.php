@@ -60,7 +60,7 @@
                         if ($type == 'd') {
                             $parsed[$i]['type'] = "directory";
                         } else if ($type == 'l') {
-                            if (is_dir('ftp://'.$_SESSION['ftp_user'].':'.$_SESSION['ftp_pass'].'@'.$_SESSION['ftp_host'].$parsed[$i]['name'])) {
+                            if ($this->ftp_isdir($parsed[$i]['name'])) {
                                 //Is directory
                                 $parsed[$i]['type'] = "directory";
                             } else {
@@ -99,7 +99,6 @@
         //  Transfer a file to remote server
         /////////////////////////////////////////////////////////////////////////
         public function transferFileToServer($cPath, $sPath, $fName, $mode) {
-            //$_GET['cPath'], $_GET['sPath'], $_GET['mode']
             set_time_limit(0);
             $this->connect();
             $msg    = array();
@@ -112,13 +111,18 @@
 					}
 				} else {
 					$mode = $this->getTransferMode($mode);
+                    if (is_dir($cPath)) {
+                        $result = $this->putDirectory($cPath, $sPath."/".$fName, $mode);
+                    } else {
+                        $result = ftp_put($this->id, $fName, $cPath, $mode);
+                    }
                     
-					if (ftp_put($this->id, $fName, $cPath, $mode)) {
-						$msg['status']  = 'success';
-                        $msg['message'] = 'File Uploaded';
-					} else {
+                    if ($result) {
+                        $msg['status']  = 'success';
+                        $msg['message'] = $fName.' uploaded';
+                    } else {
 						//Error
-						$msg = $this->getError("Failed To Upload File");
+						$msg = $this->getError("Failed to upload ".$fName);
 					}
 				}
 			} else {
@@ -141,13 +145,19 @@
                     $msg = $this->getError("Server Directory Doesn't Exist");
 				} else {
 					$mode = $this->getTransferMode($mode);
-					
-					if (ftp_get($this->id, $cPath, $fName, $mode)) {
+                    
+                    if ($this->ftp_isdir($sPath."/".$fName)) {
+                        $result = $this->getDirectory($cPath, $sPath, $fName, $mode);
+                    } else {
+                        $result = ftp_get($this->id, $cPath, $fName, $mode);
+                    }
+                    
+					if ($result) {
 						$msg['status']  = 'success';
-                        $msg['message'] = 'File Downloaded';
+                        $msg['message'] = $fName.' downloaded';
 					} else {
 						//Error
-						$msg = $this->getError("Failed To Download File");
+						$msg = $this->getError("Failed to download ".$fName);
 					}
 				}
 			} else {
@@ -337,6 +347,73 @@
 			} else {
 				return FTP_BINARY;
 			}
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Transfer directory to server
+        /////////////////////////////////////////////////////////////////////////
+        private function putDirectory($cPath, $sPath, $mode) {
+            if (!ftp_chdir($this->id, $sPath)) {
+                //Create Directory
+                if (ftp_mkdir($this->id, $sPath) === false) {
+                    return false;
+                }
+                ftp_chdir($this->id, $sPath);
+            }
+            $files  = scandir($cPath);
+            foreach ($files as $file) {
+                //filter . and ..
+                if ($file != "." && $file != "..") {
+                    //check if $file is a folder
+                    if (is_dir($cPath."/".$file)) {
+                        if (!$this->putDirectory($cPath."/".$file, $sPath."/".$file, $mode)) {
+                            return false;
+                        }
+                    } else {
+                        if (!ftp_put($this->id, $file, $cPath."/".$file, $mode)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Transfer Directory to client
+        /////////////////////////////////////////////////////////////////////////
+        private function getDirectory($cPath, $sPath, $fName, $mode) {
+            if (!file_exists($cPath)) {
+                if (!mkdir($cPath)) {
+					return false;
+				}
+			}
+            if (!ftp_chdir($this->id, $sPath."/".$fName)) {
+                return false;
+            }
+            $files = $this->parseRawList(ftp_rawlist($this->id, "-al ."));
+            foreach ($files as $file) {
+                //filter . and ..
+                if ($file['name'] != "." && $file['name'] != "..") {
+                    if ($this->ftp_isdir($sPath."/".$fName."/".$file['name'])) {
+                        if (!$this->getDirectory($cPath."/".$file['name'], $sPath."/".$fName, $file['name'], $mode)) {
+                            return false;
+                        }
+                    } else {
+                        if (!ftp_get($this->id, $cPath."/".$file['name'], $file['name'], $mode)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  FTP-IsDir
+        /////////////////////////////////////////////////////////////////////////
+        private function ftp_isdir($path) {
+            return is_dir('ftp://'.$_SESSION['ftp_user'].':'.$_SESSION['ftp_pass'].'@'.$_SESSION['ftp_host'].':'.$_SESSION['ftp_port'].$path);
         }
         
         private function parseRawList($rawList)

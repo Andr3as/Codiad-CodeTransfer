@@ -44,6 +44,7 @@
             break;
         
         case 'getServerFiles':
+            error_reporting(0);
             if (isset($_GET['path'])) {
                 $path = $_GET['path'];
             } else {

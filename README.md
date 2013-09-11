@@ -10,7 +10,7 @@ This is a plugin for the cloud IDE Codiad. It allows FTP or SCP connection to re
 ##Features
 
 - Filesystem naviagtion
-- Up- and downloading files
+- Up- and downloading files and (new) directories
 - Create directories
 - Change file permission
 - Change group (scp)
@@ -23,6 +23,10 @@ This is a plugin for the cloud IDE Codiad. It allows FTP or SCP connection to re
 
 - OpenSSL and libssh2 are required
 - Installation: [Installation on php.net](http://de2.php.net/manual/en/ssh2.installation.php "More Information")
+
+##Help
+
+Check the [wiki](https://github.com/Andr3as/Codiad-CodeTransfer/wiki "help") for some help
 
 ##Screenshots
 

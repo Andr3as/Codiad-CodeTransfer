@@ -61,8 +61,9 @@
                                     <i class="icon-trash" onclick='codiad.CodeTransfer.deleteSel("localSel");'></i>
                                     <i class="icon-info" onclick='codiad.CodeTransfer.localInfo();'></i>
                                     <i class="icon-key" onclick='codiad.CodeTransfer.fileModeSel("localSel");'></i>
-                                    <i class="icon-pencil" onclick="codiad.CodeTransfer.renameSel('localSel');"></i>
-                                    <i class="icon-arrows-ccw" onclick="codiad.CodeTransfer.updateLocalFiles(codiad.CodeTransfer.cDir);"></i>
+                                    <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("localSel");'></i>
+                                    <i class="icon-upload" onclick='codiad.CodeTransfer.transferSel("localSel");'></i>
+                                    <i class="icon-arrows-ccw" onclick='codiad.CodeTransfer.updateLocalFiles(codiad.CodeTransfer.cDir);'></i>
                                     Codiad Server: <span id="local_path"></span>
                                 </td>
                                 <td>
@@ -76,7 +77,8 @@
                                         }
                                     ?>
                                     <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("serverSel");'></i>
-                                    <i class="icon-arrows-ccw" onclick="codiad.CodeTransfer.updateServerFiles(codiad.CodeTransfer.sDir);"></i>
+                                    <i class="icon-download" onclick='codiad.CodeTransfer.transferSel("serverSel")'></i>
+                                    <i class="icon-arrows-ccw" onclick='codiad.CodeTransfer.updateServerFiles(codiad.CodeTransfer.sDir);'></i>
                                     <?php
                                         if ($_GET['action'] == "ftp") {
                                             echo "FTP Server: ";

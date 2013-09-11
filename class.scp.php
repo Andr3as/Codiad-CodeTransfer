@@ -61,8 +61,7 @@
                         if ($type == 'd') {
                             $parsed[$i]['type'] = "directory";
                         } else if ($type == 'l') {
-                            //$parsed[$i]['type'] = "linked";
-                            if ($this->execCommand("ls -al ".$parsed[$i]['name']."/") !== "") {
+                            if ($this->scp_isdir($parsed[$i]['name'])) {
                                 //Is directory
                                 $parsed[$i]['type'] = "directory";
                             } else {
@@ -112,12 +111,18 @@
 						$msg = $this->getError("Failed To Create Directory");
 					}
 				} else {
-					if (ssh2_scp_send($this->id, $cPath, $sPath."/".$fName)) {
+					if (is_dir($cPath)) {
+                        $result = $this->putDirectory($cPath, $sPath."/".$fName);
+					} else {
+                        $result = ssh2_scp_send($this->id, $cPath, $sPath."/".$fName);
+					}
+                    
+                    if ($result) {
 						$msg['status']  = 'success';
-                        $msg['message'] = 'File Uploaded';
+                        $msg['message'] = $fName.' uploaded';
 					} else {
 						//Error
-						$msg = $this->getError("Failed To Upload File");
+						$msg = $this->getError("Failed to upload ".$fName);
 					}
 				}
 			} else {
@@ -130,7 +135,7 @@
         /////////////////////////////////////////////////////////////////////////
         //  Transfer a file to Codiad Server
         /////////////////////////////////////////////////////////////////////////
-        public function transferFileToClient($cPath, $sPath, $fName, $mode) {
+        public function transferFileToClient($cPath, $sPath, $fName) {
             set_time_limit(0);
             $this->connect();
             $msg    = array();
@@ -139,12 +144,17 @@
                     //Directory doesn't exist
                     $msg = $this->getError("Server Directory Doesn't Exist");
 				} else {
-					if (ssh2_scp_recv($this->id, $sPath."/".$fName, $cPath)) {
+                    if ($this->scp_isdir($sPath."/".$fName)) {
+                        $result = $this->getDirectory($cPath, $sPath, $fName);
+                    } else {
+                        $result = ssh2_scp_recv($this->id, $sPath."/".$fName, $cPath);
+                    }
+					if ($result) {
 						$msg['status']  = 'success';
-                        $msg['message'] = 'File Downloaded';
+                        $msg['message'] = $fName.' downloaded';
 					} else {
 						//Error
-						$msg = $this->getError("Failed To Download File");
+						$msg = $this->getError("Failed to download ".$fName);
 					}
 				}
 			} else {
@@ -302,16 +312,16 @@
         }
         
         private function execCommand($cmd) {
-            if (!($stream = ssh2_exec($this->id, $cmd))) {
-                return false;
-            }
+            $stream = ssh2_exec($this->id, $cmd);
+            $err    = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+            stream_set_blocking($err, true);
             stream_set_blocking($stream, true);
-            $result = "";
-            while ($buf = fread($stream, 4096)) {
-                $result .= $buf;
-            }
-            fclose($stream);
-            return $result;
+            $err = stream_get_contents($err);
+            if ($err === "") {
+                return stream_get_contents($stream);
+            } else {
+                return false;
+            }            
         }
         
         private function getError($msg) {
@@ -319,6 +329,81 @@
             $error['status'] = 'error';
             $error['message']= $msg;
             return $error;
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Transfer directory to server
+        /////////////////////////////////////////////////////////////////////////
+        private function putDirectory($cPath, $sPath) {
+            if ($this->execCommand("cd ".$sPath) === false) {
+                //Create Directory
+                if ($this->execCommand("mkdir ".$sPath) === false) {
+                    return false;
+                }
+            }
+            $files  = scandir($cPath);
+            foreach ($files as $file) {
+                //filter . and ..
+                if ($file != "." && $file != "..") {
+                    //check if $file is a folder
+                    if (is_dir($cPath."/".$file)) {
+                        if (!$this->putDirectory($cPath."/".$file, $sPath."/".$file)) {
+                            return false;
+                        }
+                    } else {
+                        if (!ssh2_scp_send($this->id, $cPath."/".$file, $sPath."/".$file)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Transfer Directory to client
+        /////////////////////////////////////////////////////////////////////////
+        private function getDirectory($cPath, $sPath, $fName) {
+            if (!file_exists($cPath)) {
+                if (!mkdir($cPath)) {
+					return false;
+				}
+			}
+            if ($this->execCommand("cd ".$sPath."/".$fName) === false) {
+                return false;
+            }
+            $raw    = $this->execCommand("ls -al ".$sPath."/".$fName."/");
+            $raw    = explode("\n", $raw);
+            $raw    = array_slice($raw, 1);
+            $files  = $this->parseRawList($raw);
+            $files  = array_slice($files, 1);
+            foreach ($files as $file) {
+                //filter . and ..
+                if ($file['name'] != "." && $file['name'] != "..") {
+                    if ($this->scp_isdir($sPath."/".$fName."/".$file['name'])) {
+                        if (!$this->getDirectory($cPath."/".$file['name'], $sPath."/".$fName, $file['name'])) {
+                            return false;
+                        }
+                    } else {
+                        if (!ssh2_scp_recv($this->id, $sPath."/".$fName."/".$file['name'], $cPath."/".$file['name']))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  SCP-IsDir
+        /////////////////////////////////////////////////////////////////////////
+        private function scp_isdir($path) {
+            if ($this->execCommand("ls -al ".$path."/") === false) {
+                return false;
+            } else {
+                return true;
+            }
         }
         
         private function parseRawList($rawList)
