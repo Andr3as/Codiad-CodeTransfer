@@ -105,7 +105,8 @@
                         <div id="transfer_log_div">
                             <table id="transfer_log"></table>
                         </div>
-                        <button onclick="codiad.CodeTransfer.closeDialog(); return false;">Close</button>
+                        <button onclick="codiad.CodeTransfer.hide(); return false;">Hide</button>
+                        <button onclick="codiad.CodeTransfer.closeDialog(); return false;">Logout</button>
                     </form>
                 </div>
             <?php

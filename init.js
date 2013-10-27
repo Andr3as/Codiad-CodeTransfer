@@ -26,12 +26,17 @@ codiad.CodeTransfer = {
         localSel    : [],
         serverSel   : [],
         mode        : "ftp",
+        hided       : false,
         
         init: function() {
         },
         
         showSwitchDialog: function() {
-            codiad.modal.load(300,this.path+'dialog.php?action=switch');
+            if (this.hided) {
+                this.showDialog(this.mode);
+            } else {
+                codiad.modal.load(300,this.path+'dialog.php?action=switch');
+            }
         },
         
         setMode: function(mode) {
@@ -45,7 +50,6 @@ codiad.CodeTransfer = {
         
         showDialog: function(mode) {
             var _this     = this;
-            this.setMode(mode);
             codiad.modal.load(1000,this.path+'dialog.php?action='+mode);
             $('#transfer_form').ready(function(){
                 //Hide Loading
@@ -57,6 +61,11 @@ codiad.CodeTransfer = {
                 $('#close-handle').click(function() {
                     _this.closeDialog();
                 });
+                if (_this.hided) {
+                    _this.updateServerFiles(_this.sDir);
+                } else {
+                    _this.setMode(mode);
+                }
             });
         },
         
@@ -833,6 +842,16 @@ codiad.CodeTransfer = {
         
         //////////////////////////////////////////////////////////
         //
+        //  Hide dialog
+        //
+        //////////////////////////////////////////////////////////
+        hide: function() {
+            this.hided = true;
+            codiad.modal.unload();
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
         //  Connect to remote server
         //
         //////////////////////////////////////////////////////////
@@ -865,6 +884,7 @@ codiad.CodeTransfer = {
                 _this.hideLoadingAnimation();
                 _this.sDir  = "/";
                 _this.sBase = "/";
+                _this.hided = false;
             });
         }
     };
