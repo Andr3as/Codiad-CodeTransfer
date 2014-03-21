@@ -40,10 +40,11 @@ Check the [wiki](https://github.com/Andr3as/Codiad-CodeTransfer/wiki "help") for
 [http://andrano.de/CodeTransfer](http://andrano.de/CodeTransfer "More Information")
 
 
-###Included
+##License
+
+CodeTransfer is released under [MIT License](https://github.com/Andr3as/Codiad-CodeTransfer/blob/master/LICENSE)
+
+##Code from other projects included in CodeTransfer
 
 ####CSS Loading animation
-[CSS Loading](http://codepen.io/rlemon/pen/KyDgh "More Information")
-
-#####Released under MIT License
-[License of CodePen](http://blog.codepen.io/legal/licensing/ "More Information")
+[CSS Loading](http://codepen.io/rlemon/pen/KyDgh "More Information"): released under MIT License [License of CodePen](http://blog.codepen.io/legal/licensing/ "More Information")
