@@ -183,6 +183,10 @@
         }
         
         static public function getWorkspacePath($path) {
+			//Security check
+			if (!Common::checkPath($path)) {
+				die('{"status":"error","message":"Invalid path"}');
+			}
             if (strpos($path, "/") === 0) {
                 //Unix absolute path
                 return $path;
