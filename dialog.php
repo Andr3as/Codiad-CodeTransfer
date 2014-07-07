@@ -4,6 +4,8 @@
 	See [root]/license.md for more information. This information must remain intact.
 -->
 <?php
+    error_reporting(0);
+    
     require_once('../../common.php');
     checkSession();
     
