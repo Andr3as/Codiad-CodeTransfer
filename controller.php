@@ -18,12 +18,8 @@
         
         case 'setMode':
             if (isset($_GET['mode'])) {
-                if (isset($_SESSION['transfer_type'])) {
-                    echo '{"status":"error","message":"Mode already saved"}';
-                } else {
-                    $_SESSION['transfer_type'] = $_GET['mode'];
-                    echo '{"status":"success","message":"Mode saved"}';
-                }
+                $_SESSION['transfer_type'] = $_GET['mode'];
+                echo '{"status":"success","message":"Mode saved"}';
             } else {
                 echo '{"status":"error","message":"Missing Parameter"}';
             }

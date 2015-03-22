@@ -12,6 +12,11 @@
     overflow-x: hidden;
 }
 
+#transfer_form_div .big-icon{
+    font-size: 140%;
+    margin-right: 12px;
+}
+
 #transfer_form abbr {
     cursor: pointer;
     border-bottom: 1px dashed white;

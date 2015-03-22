@@ -27,6 +27,7 @@ codiad.CodeTransfer = {
         serverSel   : [],
         mode        : "ftp",
         hided       : false,
+        mirrorEnabled : false,
         
         init: function() {
         },
@@ -49,7 +50,8 @@ codiad.CodeTransfer = {
         },
         
         showDialog: function(mode) {
-            var _this     = this;
+            var _this           = this;
+            this.mirrorEnabled  = false;
             codiad.modal.load(1000,this.path+'dialog.php?action='+mode);
             $('#transfer_form').ready(function(){
                 //Hide Loading
@@ -114,7 +116,6 @@ codiad.CodeTransfer = {
                     buf  = index[i].name;
                     name = buf.substring(buf.lastIndexOf("/")+1);
                     path = buf;
-                    icon, type;
                     if (index[i].type == "file") {
                         ext  = name.substring(name.lastIndexOf(".")+1);
                         icon = "file ext-"+ext;
@@ -149,10 +150,36 @@ codiad.CodeTransfer = {
 		//
 		//  path - {String} - Path of the current directory
 		//
-		//////////////////////////////////////////////////////////
-        updateServerFiles: function(path) {
+        //////////////////////////////////////////////////////////
+        updateServerFiles: function(path, mirror) {
             var _this = this;
             this.showLoadingAnimation();
+            
+            mirror = mirror || false;
+            
+            console.log(this.mirrorEnabled);
+            console.log(mirror);
+            if(this.mirrorEnabled && !mirror) {
+                //Check if folder exists on server
+                console.log(path);
+                var update = false;
+                
+                
+                if (this.directoryExists('#transfer_localList', this.getName(path))) {
+                    this.cDir = this.cDir + '/' + this.getName(path);
+                    update = true;
+                } else if ($('#transfer_serverList li[data-path="' + path + '"]').text() == "..") {
+                    if (this.getName($('#transfer_localList li:first').attr('data-path')) == this.getName(path)) {
+                        this.cDir = $('#transfer_localList li:first').attr('data-path');
+                        update = true;
+                    }
+                }
+                
+                if (update) {
+                    this.updateLocalFiles(this.cDir, true);
+                }
+            }
+            
             $.getJSON(this.controller+"?action=getServerFiles&path="+path, function(data) {
                 _this.hideLoadingAnimation();
                 if (data.status == 'error') {
@@ -171,10 +198,35 @@ codiad.CodeTransfer = {
 		//
 		//  path - {String} - Path of the current Directory
 		//
-		//////////////////////////////////////////////////////////
-        updateLocalFiles: function(path) {
+        //////////////////////////////////////////////////////////
+        updateLocalFiles: function(path, mirror) {
             var _this = this;
             _this.showLoadingAnimation();
+            
+            mirror = mirror || false;
+            
+            console.log(this.mirrorEnabled);
+            console.log(mirror);
+            if(this.mirrorEnabled && !mirror) {
+                //Check if folder exists local
+                console.log(path);
+                var update = false;
+                
+                if (this.directoryExists('#transfer_serverList', this.getName(path))) {
+                    this.sDir = this.sDir + '/' + this.getName(path);
+                    update = true;
+                } else if ($('#transfer_localList li[data-path="' + path + '"]').text() == "..") {
+                    if (this.getName($('#transfer_serverList li:first').attr('data-path')) == this.getName(path)) {
+                        this.sDir = $('#transfer_serverList li:first').attr('data-path');
+                        update = true;
+                    }
+                }
+                
+                if (update) {
+                    this.updateServerFiles(this.sDir, true);
+                }
+            }
+            
             $.getJSON("components/filemanager/controller.php?action=index&path="+path, 
                 function(data) {
                     _this.hideLoadingAnimation();
@@ -187,7 +239,7 @@ codiad.CodeTransfer = {
         //
         //  Transfer file to remote server
         //
-		//  Parameters:
+        //  Parameters:
 		//
 		//  cPath - {String} - Path of the file on the Codiad server with filename
         //  sPath - {String} - Directory on the remote server without filename
@@ -842,12 +894,56 @@ codiad.CodeTransfer = {
         
         //////////////////////////////////////////////////////////
         //
+        //  Get file name
+        //
+        //  Parameters:
+        //
+        //  path - {String} - Path of file or directory
+        //
+        //////////////////////////////////////////////////////////
+        getName: function(path) {
+            return path.substring(path.lastIndexOf("/") + 1);
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
         //  Hide dialog
         //
         //////////////////////////////////////////////////////////
         hide: function() {
             this.hided = true;
             codiad.modal.unload();
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
+        //  Mirror actions on server and client side
+        //
+        //////////////////////////////////////////////////////////
+        mirror: function() {
+            $('#ct_mirror_icon').toggleClass('icon-lock').toggleClass('icon-lock-open');
+            this.mirrorEnabled = !this.mirrorEnabled;
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
+        //  Connect to remote server
+        //
+        //  id - {String} - Selector of the list to search in
+        //  name - {String} - Directory name to search for name
+        //
+        //////////////////////////////////////////////////////////
+        
+        directoryExists: function(id, name) {
+            var result = false;
+            
+            $(id +' .directory').each(function(){
+                if ($(this).text() == name) {
+                    result = true;
+                    return false; //Just to break the loop
+                }
+            });
+            return result;
         },
         
         //////////////////////////////////////////////////////////

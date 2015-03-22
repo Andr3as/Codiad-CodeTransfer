@@ -59,28 +59,31 @@
                         <table id="transfer_list">
                             <tr>
                                 <td>
-                                    <i class="icon-folder" onclick='codiad.CodeTransfer.createFolder("localSel");'></i>
-                                    <i class="icon-trash" onclick='codiad.CodeTransfer.deleteSel("localSel");'></i>
-                                    <i class="icon-info" onclick='codiad.CodeTransfer.localInfo();'></i>
-                                    <i class="icon-key" onclick='codiad.CodeTransfer.fileModeSel("localSel");'></i>
-                                    <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("localSel");'></i>
-                                    <i class="icon-upload" onclick='codiad.CodeTransfer.transferSel("localSel");'></i>
-                                    <i class="icon-arrows-ccw" onclick='codiad.CodeTransfer.updateLocalFiles(codiad.CodeTransfer.cDir);'></i>
+                                    <i class="icon-folder" onclick='codiad.CodeTransfer.createFolder("localSel");' title="Create folder"></i>
+                                    <i class="icon-trash" onclick='codiad.CodeTransfer.deleteSel("localSel");' title="Delete"></i>
+                                    <i class="icon-info" onclick='codiad.CodeTransfer.localInfo();' title="Information"></i>
+                                    <i class="icon-key" onclick='codiad.CodeTransfer.fileModeSel("localSel");' title="Change permissions"></i>
+                                    <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("localSel");' title="Rename"></i>
+                                    <i class="icon-upload" onclick='codiad.CodeTransfer.transferSel("localSel");' title="Upload"></i>
+                                    <i class="icon-arrows-ccw" onclick='codiad.CodeTransfer.updateLocalFiles(codiad.CodeTransfer.cDir);' title="Update"></i>
                                     Codiad Server: <span id="local_path"></span>
                                 </td>
+                                <td style="width: 12px;">
+                                    <i class="icon-lock-open big-icon" id="ct_mirror_icon" style="margin-right: -10px;" onclick="codiad.CodeTransfer.mirror();" title="Mirror navigation"></i>
+                                </td>
                                 <td>
-                                    <i class="icon-folder" onclick='codiad.CodeTransfer.createFolder("serverSel");'></i>
-                                    <i class="icon-trash" onclick='codiad.CodeTransfer.deleteSel("serverSel");'></i>
-                                    <i class="icon-info" onclick='codiad.CodeTransfer.serverInfo();'></i>
-                                    <i class="icon-key" onclick='codiad.CodeTransfer.fileModeSel("serverSel");'></i>
+                                    <i class="icon-folder" onclick='codiad.CodeTransfer.createFolder("serverSel");' title="Create Folder"></i>
+                                    <i class="icon-trash" onclick='codiad.CodeTransfer.deleteSel("serverSel");' title="Delete"></i>
+                                    <i class="icon-info" onclick='codiad.CodeTransfer.serverInfo();' title="Information"></i>
+                                    <i class="icon-key" onclick='codiad.CodeTransfer.fileModeSel("serverSel");' title="Change permissions"></i>
                                     <?php
                                         if ($_GET['action'] == 'scp') {
-                                            echo '<i class="icon-users" onclick="codiad.CodeTransfer.changeGroupSel(\'serverSel\');"></i>';
+                                            echo '<i class="icon-users" onclick="codiad.CodeTransfer.changeGroupSel(\'serverSel\');" title="Change group"></i>';
                                         }
                                     ?>
-                                    <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("serverSel");'></i>
-                                    <i class="icon-download" onclick='codiad.CodeTransfer.transferSel("serverSel")'></i>
-                                    <i class="icon-arrows-ccw" onclick='codiad.CodeTransfer.updateServerFiles(codiad.CodeTransfer.sDir);'></i>
+                                    <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("serverSel");' title="Rename"></i>
+                                    <i class="icon-download" onclick='codiad.CodeTransfer.transferSel("serverSel")' title="Download"></i>
+                                    <i class="icon-arrows-ccw" onclick='codiad.CodeTransfer.updateServerFiles(codiad.CodeTransfer.sDir);' title="Update"></i>
                                     <?php
                                         if ($_GET['action'] == "ftp") {
                                             echo "FTP Server: ";
@@ -92,7 +95,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="fileList"><div class="file_list_div"><ul id="transfer_localList"></ul></div></td>
+                                <td colspan="2" class="fileList"><div class="file_list_div"><ul id="transfer_localList"></ul></div></td>
                                 <td class="fileList"><div class="file_list_div"><ul id="transfer_serverList"></ul></div></td>
                             </tr>
                         </table>
