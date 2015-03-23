@@ -400,7 +400,7 @@
                             return false;
                         }
                     } else {
-                        if (!ftp_get($this->id, $cPath."/".$file['name'], $file['name'], $mode)) {
+                        if (!ftp_get($this->id, $cPath."/".$file['name'], $sPath."/".$fName."/".$file['name'], $mode)) {
                             return false;
                         }
                     }
