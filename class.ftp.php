@@ -286,6 +286,24 @@
         }
         
         /////////////////////////////////////////////////////////////////////////
+        //  Edit file locally
+        /////////////////////////////////////////////////////////////////////////
+        public function editFileLocally($cName, $cBase, $sPath, $fName, $mode) {
+            $cPath = $cBase . "/" . $_SESSION['ct_mt_rand'];
+            if (!is_dir($cPath)) {
+                if (!mkdir($cPath)) {
+                    $msg = $this->getError("Failed to create temporary directory");
+                    return json_encode($msg);
+                }
+            }
+            $cPath .= "/" . $fName;
+            $msg = $this->transferFileToClient($cPath, $sPath, $fName ,$mode);
+            $msg = json_decode($msg, true);
+            $msg['file'] = $cName . "/" . $_SESSION['ct_mt_rand'] . "/" . $fName;
+            return json_encode($msg);
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
         //
         //  Private methods
         //

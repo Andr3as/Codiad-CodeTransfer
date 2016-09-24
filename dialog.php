@@ -83,6 +83,7 @@
                                     ?>
                                     <i class="icon-pencil" onclick='codiad.CodeTransfer.renameSel("serverSel");' title="Rename"></i>
                                     <i class="icon-download" onclick='codiad.CodeTransfer.transferSel("serverSel")' title="Download"></i>
+                                    <i class="icon-export" onclick='codiad.CodeTransfer.editSel("serverSel")' title="Edit locally"></i>
                                     <i class="icon-arrows-ccw" onclick='codiad.CodeTransfer.updateServerFiles(codiad.CodeTransfer.sDir);' title="Update"></i>
                                     <?php
                                         if ($_GET['action'] == "ftp") {

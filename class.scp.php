@@ -266,7 +266,7 @@
         }
         
         /////////////////////////////////////////////////////////////////////////
-        //  Rename directory or file
+        //  Change group
         /////////////////////////////////////////////////////////////////////////
         public function changeServerGroup($path, $name) {
             $this->connect();
@@ -279,6 +279,24 @@
                 $msg = $this->getError("Failed To Change Group");
             }
             $this->disconnect();
+            return json_encode($msg);
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Edit file locally
+        /////////////////////////////////////////////////////////////////////////
+        public function editFileLocally($cName, $cBase, $sPath, $fName) {
+            $cPath = $cBase . "/" . $_SESSION['ct_mt_rand'];
+            if (!is_dir($cPath)) {
+                if (!mkdir($cPath)) {
+                    $msg = $this->getError("Failed to create temporary directory");
+                    return json_encode($msg);
+                }
+            }
+            $cPath .= "/" . $fName;
+            $msg = $this->transferFileToClient($cPath, $sPath, $fName);
+            $msg = json_decode($msg, true);
+            $msg['file'] = $cName . "/" . $_SESSION['ct_mt_rand'] . "/" . $fName;
             return json_encode($msg);
         }
         
