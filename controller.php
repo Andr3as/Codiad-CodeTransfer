@@ -198,6 +198,23 @@
             }
             break;
         
+        case 'editFileLocally':
+            if (isset($_GET['cBase']) && isset($_GET['sPath']) && isset($_GET['fName'])  && isset($_GET['mode'])) {
+                $path = transfer_controller::getWorkspacePath($_GET['cBase']);
+                echo transfer_controller::editFileLocally($_GET['cBase'], $path, $_GET['sPath'], $_GET['fName'], $_GET['mode']);
+            } else {
+                echo '{"status":"error","message":"Missing Parameter!"}';
+            }
+            break;
+            
+        case 'editFileLocallyClose':
+            if (isset($_GET['cPath'])) {
+                $path = transfer_controller::getWorkspacePath($_GET['cPath']);
+                echo transfer_controller::editFileLocallyClose($path);
+            } else {
+                echo '{"status":"error","message":"Missing Parameter!"}';
+            }
+        
         default:
             echo '{"status":"error","message":"No Type"}';
             break;

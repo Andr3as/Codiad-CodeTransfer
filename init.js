@@ -28,8 +28,27 @@ codiad.CodeTransfer = {
         mode        : "ftp",
         hided       : false,
         mirrorEnabled : false,
+        editLocal   : [],
         
         init: function() {
+            var _this = this;
+            amplify.subscribe('active.onSave', function(path){
+                //Upload locally edited files
+                path = path || codiad.active.getPath();
+                if (typeof(_this.editLocal[path]) != 'undefined') {
+                    setTimeout(function() {
+                        _this.editFileLocallySave(path);
+                    }, 500);
+                }
+            });
+            amplify.subscribe('active.onClose', function(path){
+                //Delete locally edited files
+                if (typeof(_this.editLocal[path]) != 'undefined') {
+                    setTimeout(function() {
+                        _this.editFileLocallyClose(path);
+                    }, 500);
+                }
+            });
         },
         
         showSwitchDialog: function() {
@@ -157,11 +176,8 @@ codiad.CodeTransfer = {
             
             mirror = mirror || false;
             
-            console.log(this.mirrorEnabled);
-            console.log(mirror);
             if(this.mirrorEnabled && !mirror) {
                 //Check if folder exists on server
-                console.log(path);
                 var update = false;
                 
                 
@@ -205,11 +221,8 @@ codiad.CodeTransfer = {
             
             mirror = mirror || false;
             
-            console.log(this.mirrorEnabled);
-            console.log(mirror);
             if(this.mirrorEnabled && !mirror) {
                 //Check if folder exists local
-                console.log(path);
                 var update = false;
                 
                 if (this.directoryExists('#transfer_serverList', this.getName(path))) {
@@ -842,6 +855,99 @@ codiad.CodeTransfer = {
             }
             this.unselect(selArr);
         },
+        
+        //////////////////////////////////////////////////////////
+        //
+        //  Edit selection locally
+        //
+        //  Parameters:
+        //
+        //  selArr - {String} - Name of the array which contains
+        //                          all selected elements
+        //                          serverSel or localSel
+        //
+        //////////////////////////////////////////////////////////
+        editSel: function(selArr) {
+            var mode    = $('#transfer_mode').val();
+            var source  = selArr.replace("Sel", "");
+            var obj, path, file;
+			for (var i = 0; i < this[selArr].length; i++) {
+				obj = this[selArr][i].reverse();
+				file = $(obj).text();
+				path = $(obj).attr("data-path");
+				this.editFileLocally(this.sDir, file, mode);
+            }
+            this.unselect(selArr);
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
+        //  Transfer file to Codiad Server
+        //
+        //  Parameters:
+		//
+        //  sPath - {String} - Directory on the remote server without filename
+        //  fName - {String} - Name of the file
+        //  mode - {String} - FTP-Transfermode / either FTP_ASCII or FTP_BINARY
+        //
+		//////////////////////////////////////////////////////////
+        editFileLocally: function(sPath, file, mode) {
+            var _this = this;
+            this.showLoadingAnimation();
+            $.getJSON(this.controller+"?action=editFileLocally&cBase="+this.cBase+"&sPath="+sPath+"&fName="+file+"&path="+this.sDir+"&mode="+mode,
+                function(data) {
+                    _this.hideLoadingAnimation();
+                    if (data.status != 'error') {
+                        codiad.filemanager.openFile(data.file);
+                        _this.editLocal[data.file] = {cPath: data.file, cBase: _this.cBase, sPath: sPath, fName: file, sDir: _this.sDir, mode: mode};
+                        _this.hide();
+                    }
+                    codiad.message[data.status](data.message);
+                });
+        },
+        
+        //////////////////////////////////////////////////////////
+        //
+        //  Delete locally edited file
+        //
+        //  Parameters:
+		//
+        //  path - {String} - Path of local file
+        //
+		//////////////////////////////////////////////////////////
+		editFileLocallyClose: function(path) {
+            if (typeof(this.editLocal[path]) == 'undefined') {
+                return false;
+            } else {
+                var file = this.editLocal[path];
+                this.editLocal[path] = undefined;
+            }
+            $.getJSON(this.controller+"?action=editFileLocallyClose&cPath="+file.cPath+"&cBase", function(data) {
+                if (data.status == 'error') {
+                    codiad.message[data.status](data.message);
+                }
+            });
+		},
+		
+		//////////////////////////////////////////////////////////
+        //
+        //  Save locally edited file
+        //
+        //  Parameters:
+		//
+        //  path - {String} - Path of local file
+        //
+		//////////////////////////////////////////////////////////
+		editFileLocallySave: function(path) {
+            if (typeof(this.editLocal[path]) == 'undefined') {
+                return false;
+            } else {
+                var file = this.editLocal[path];
+            }
+            $.getJSON(this.controller+"?action=transferFileToServer&cPath="+file.cPath+"&sPath="+file.sPath+"&fName="+file.fName+"&path="+file.sDir+"&mode="+file.mode, function(data) {
+                codiad.message[data.status](data.message);
+            });
+		},
         
         //////////////////////////////////////////////////////////
         //

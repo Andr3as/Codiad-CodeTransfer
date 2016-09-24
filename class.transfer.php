@@ -15,6 +15,10 @@
                 $ssh2 = new scp_client();
                 $ssh2->startConnection($host, $user, $pass, $port);
             }
+            //Create mt_rand for session
+            if (!isset($_SESSION['ct_mt_rand'])) {
+                $_SESSION['ct_mt_rand'] = ".ct_" . mt_rand();
+            }
         }
         
         static public function stopConnection() {
@@ -155,6 +159,44 @@
                 $ssh2 = new scp_client();
                 return $ssh2->changeServerGroup($path, $name);
             }
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Edit file locally
+        /////////////////////////////////////////////////////////////////////////
+        static public function editFileLocally($cName, $cBase, $sPath, $fName, $mode) {
+            if ($_SESSION['transfer_type'] == "ftp") {
+                $ftp = new ftp_client();
+                return $ftp->editFileLocally($cName, $cBase, $sPath, $fName, $mode);
+            } else {
+                $ssh2 = new scp_client();
+                return $ssh2->editFileLocally($cName, $cBase, $sPath, $fName);
+            }
+        }
+        
+        /////////////////////////////////////////////////////////////////////////
+        //  Delete locally edited file
+        /////////////////////////////////////////////////////////////////////////
+        static public function editFileLocallyClose($cPath) {
+            $msg = array('status' => 'success', 'message' => '');
+            if (is_file($cPath)) {
+                if (strstr($cPath,$_SESSION['ct_mt_rand']) === false) {
+                    $msg = array('status' => 'error', 'message' => 'Security stop!');
+                    return json_encode($msg);
+                }
+                if (!unlink($cPath)) {
+                    $msg = array('status' => 'error', 'message' => 'Faild to delete file');
+                }
+                $dir = dirname($cPath);
+                $scan = scandir($dir);
+                //Ignore . and ..
+                if (count($scan) <= 2) {
+                    rmdir($dir);
+                }
+            } else {
+                $msg = array('status' => 'error', 'message' => 'Faild to delete file');
+            }
+            return json_encode($msg);
         }
         
         /////////////////////////////////////////////////////////////////////////
