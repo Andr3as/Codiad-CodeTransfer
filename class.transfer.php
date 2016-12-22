@@ -185,7 +185,7 @@
                     return json_encode($msg);
                 }
                 if (!unlink($cPath)) {
-                    $msg = array('status' => 'error', 'message' => 'Faild to delete file');
+                    $msg = array('status' => 'error', 'message' => 'Failed to delete file');
                 }
                 $dir = dirname($cPath);
                 $scan = scandir($dir);
@@ -194,7 +194,7 @@
                     rmdir($dir);
                 }
             } else {
-                $msg = array('status' => 'error', 'message' => 'Faild to delete file');
+                $msg = array('status' => 'error', 'message' => 'Failed to delete file');
             }
             return json_encode($msg);
         }
