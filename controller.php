@@ -269,12 +269,12 @@
             } else {
                 $info['date'] = date("d F - H:i", $date);
             }
-            $perm = fileperms($path);
-            if ($perm === false) {
+            $fperm = fileperms($path);
+            if ($fperm === false) {
                 $result['status'] = "error";
                 $result['message'] = "permissions";
             } else {
-                $info['permissions'] = getFullPermissions($perm);
+                $info['permissions'] = getFullPermissions($fperm);
             }
             $owner = fileowner($path);
             if ($owner === false) {
@@ -301,27 +301,27 @@
         return json_encode($result);
     }
     
-    function getFullPermissions($perms) {
-        //http://de3.php.net/manual/en/function.fileperms.php
-        if (($perms & 0xC000) == 0xC000) {
+    function getFullPermissions($fperms) {
+        //http://php.net/manual/en/function.fileperms.php
+        if (($fperms & 0xC000) == 0xC000) {
             // Socket
             $info = 's';
-        } elseif (($perms & 0xA000) == 0xA000) {
+        } elseif (($fperms & 0xA000) == 0xA000) {
             // Symbolischer Link
             $info = 'l';
-        } elseif (($perms & 0x8000) == 0x8000) {
+        } elseif (($fperms & 0x8000) == 0x8000) {
             // Regulär
             $info = '-';
-        } elseif (($perms & 0x6000) == 0x6000) {
+        } elseif (($fperms & 0x6000) == 0x6000) {
             // Block special
             $info = 'b';
-        } elseif (($perms & 0x4000) == 0x4000) {
+        } elseif (($fperms & 0x4000) == 0x4000) {
             // Verzeichnis
             $info = 'd';
-        } elseif (($perms & 0x2000) == 0x2000) {
+        } elseif (($fperms & 0x2000) == 0x2000) {
             // Character special
             $info = 'c';
-        } elseif (($perms & 0x1000) == 0x1000) {
+        } elseif (($fperms & 0x1000) == 0x1000) {
             // FIFO pipe
             $info = 'p';
         } else {
@@ -330,25 +330,25 @@
         }
         
         // Besitzer
-        $info .= (($perms & 0x0100) ? 'r' : '-');
-        $info .= (($perms & 0x0080) ? 'w' : '-');
-        $info .= (($perms & 0x0040) ?
-                    (($perms & 0x0800) ? 's' : 'x' ) :
-                    (($perms & 0x0800) ? 'S' : '-'));
+        $info .= (($fperms & 0x0100) ? 'r' : '-');
+        $info .= (($fperms & 0x0080) ? 'w' : '-');
+        $info .= (($fperms & 0x0040) ?
+                    (($fperms & 0x0800) ? 's' : 'x' ) :
+                    (($fperms & 0x0800) ? 'S' : '-'));
         
         // Gruppe
-        $info .= (($perms & 0x0020) ? 'r' : '-');
-        $info .= (($perms & 0x0010) ? 'w' : '-');
-        $info .= (($perms & 0x0008) ?
-                    (($perms & 0x0400) ? 's' : 'x' ) :
-                    (($perms & 0x0400) ? 'S' : '-'));
+        $info .= (($fperms & 0x0020) ? 'r' : '-');
+        $info .= (($fperms & 0x0010) ? 'w' : '-');
+        $info .= (($fperms & 0x0008) ?
+                    (($fperms & 0x0400) ? 's' : 'x' ) :
+                    (($fperms & 0x0400) ? 'S' : '-'));
         
         // Andere
-        $info .= (($perms & 0x0004) ? 'r' : '-');
-        $info .= (($perms & 0x0002) ? 'w' : '-');
-        $info .= (($perms & 0x0001) ?
-                    (($perms & 0x0200) ? 't' : 'x' ) :
-                    (($perms & 0x0200) ? 'T' : '-'));
+        $info .= (($fperms & 0x0004) ? 'r' : '-');
+        $info .= (($fperms & 0x0002) ? 'w' : '-');
+        $info .= (($fperms & 0x0001) ?
+                    (($fperms & 0x0200) ? 't' : 'x' ) :
+                    (($fperms & 0x0200) ? 'T' : '-'));
         return $info;
     }
 ?>
