@@ -12,11 +12,12 @@
         /////////////////////////////////////////////////////////////////////////
         //  Public methods
         /////////////////////////////////////////////////////////////////////////
-        public function startConnection($host, $user, $pass, $port) {
+        public function startConnection($host, $user, $pass, $port, $ftps) {
             $_SESSION['ftp_host']   = $host;
             $_SESSION['ftp_user']   = $user;
             $_SESSION['ftp_pass']   = $pass;
             $_SESSION['ftp_port']   = $port;
+            $_SESSION['ftps']       = $ftps;
             $this->connect();
             $this->disconnect();
         }
@@ -313,10 +314,18 @@
         //  Connect remote server
         /////////////////////////////////////////////////////////////////////////
         private function connect() {
-            $connection_id = ftp_connect($_SESSION['ftp_host'], $_SESSION['ftp_port']);
+            if (isset($_SESSION['ftps']) && $_SESSION['ftps'] == "true") {
+                $connection_id = ftp_ssl_connect($_SESSION['ftp_host'], $_SESSION['ftp_port']);
+                $_SESSION['msg'] = "SSL ";
+            } else {
+                $connection_id = ftp_connect($_SESSION['ftp_host'], $_SESSION['ftp_port']);
+                $_SESSION['msg'] = "";
+            }
+            
             if ($connection_id === false) {
                 die('{"status":"error","message":"Connection failed! Wrong Host or Port?"}');
             }
+
             $login_result = ftp_login($connection_id, $_SESSION['ftp_user'], $_SESSION['ftp_pass']);
             if ($login_result === false) {
                 die('{"status":"error","message":"Connection failed! Wrong Username or Password?"}');

@@ -38,6 +38,10 @@
                                         $mode = 22;
                                     }
                                     echo '<td id="transfer_port_td">Port:<input type="number" value="'.$mode.'" id="transfer_port"></td>';
+
+                                    if ($_GET['action'] == 'ftp') {
+                                        echo '<td>SSL<br><input type="checkbox" name="ftps" id="ftps"></td>';
+                                    }
                                 ?>
                                 <td id="transfer_connect_td">
                                     <button id="transfer_connect" onclick="codiad.CodeTransfer.connect(); return false;">Connect</button>

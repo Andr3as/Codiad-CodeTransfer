@@ -27,8 +27,8 @@
         
         case 'connect':
             if (isset($_POST['host']) && isset($_POST['user']) && isset($_POST['password']) && isset($_POST['port'])) {
-                transfer_controller::startConnection($_POST['host'], $_POST['user'], $_POST['password'], $_POST['port']);
-                echo '{"status":"success","message":"Connection started"}';
+                transfer_controller::startConnection($_POST['host'], $_POST['user'], $_POST['password'], $_POST['port'], $_POST['ftps']);
+                echo '{"status":"success","message":"' . $_SESSION['msg'] . 'Connection started"}';
             } else {
                 echo '{"status":"error","message":"Missing Parameter"}';
             }

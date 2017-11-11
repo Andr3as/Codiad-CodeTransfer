@@ -1063,8 +1063,9 @@ codiad.CodeTransfer = {
             var user = $('#transfer_user').val();
             var pass = $('#transfer_password').val();
             var port = $('#transfer_port').val();
+            var ftps = $('#ftps').is(':checked');
             this.showLoadingAnimation();
-            $.post(_this.controller+"?action=connect", {"host":host, "user":user, "password":pass, "port":port}, function(data) {
+            $.post(_this.controller+"?action=connect", {"host":host, "user":user, "password":pass, "port":port, "ftps": ftps}, function(data) {
                 _this.hideLoadingAnimation();
                 data = $.parseJSON(data);
                 if (data.status != "error") {

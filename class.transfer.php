@@ -7,10 +7,10 @@
 
     class transfer_controller {
         
-        static public function startConnection($host, $user, $pass, $port) {
+        static public function startConnection($host, $user, $pass, $port, $ftps) {
             if ($_SESSION['transfer_type'] == "ftp") {
                 $ftp = new ftp_client();
-                $ftp->startConnection($host, $user, $pass, $port);
+                $ftp->startConnection($host, $user, $pass, $port, $ftps);
             } else {
                 $ssh2 = new scp_client();
                 $ssh2->startConnection($host, $user, $pass, $port);
